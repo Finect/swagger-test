@@ -21,17 +21,20 @@ program
         });
     } catch(err) {
       process.stdout.write('Invalid global variables option. Use var1=value1,var2=value2\n'); 
-        process.exit(500);
+      throw err;
     }
 
     return options;
   }, [])
-  .option('-r, --run [dataFile]', 'Run postman collection using newman cli. You can include json/csv file to variables data.')
+  .option('-r, --run [dataFile]', 'Run postman collection using newman cli.')
   .option('-s, --save', 'Save postman collection to disk')
   .option('-t, --tokenUrl [tokenUrl]', 'Override token url in swagger.')
   .description('Create Postman collection with test from swagger')
   .action((req, options) => {
-    swagger(req, options, result => { process.exit(result); });
+    swagger(req, options).catch(err => { 
+      process.stdout.write('Ohnoes! :-( ' + err.stack || err.message + '\n');
+      throw err; 
+    });
   });
 
 program.parse(process.argv);

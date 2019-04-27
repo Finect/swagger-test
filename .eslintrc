@@ -1,8 +1,7 @@
 {
-  "plugins": ["@finect/eslint-plugin-finect"],
-  "extends": "plugin:@finect/eslint-plugin-finect/recommended",
+  "extends": ["eslint:recommended", "plugin:node/recommended"],
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2017,
     "sourceType": "module"
   },
   "rules": {
