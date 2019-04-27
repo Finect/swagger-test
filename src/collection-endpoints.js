@@ -118,13 +118,13 @@ class Endpoints {
       collection.variables.add({ key: variable.name, id: variable.name, value: variable.value, type: 'string' });
     });
 
-    if (!_.some(this.globalVariables, { name: "base-url" })) {
-        collection.variables.add({ 
-          key: 'base-url', 
-          id: 'base-url', 
-          value: this.swagger.schemes[0] + '://' + this.swagger.host + this.swagger.basePath, 
-          type: 'string' 
-        });
+    if (this.globalVariables.some(variable => variable.name === 'base-url')) {
+      collection.variables.add({ 
+        key: 'base-url', 
+        id: 'base-url', 
+        value: this.swagger.schemes[0] + '://' + this.swagger.host + this.swagger.basePath, 
+        type: 'string' 
+      });
     } 
 
     return collection;

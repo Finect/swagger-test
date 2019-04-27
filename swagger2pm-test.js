@@ -2,7 +2,7 @@
 'use strict';
 
 const program = require('commander');
-const swagger = require('./swagger');
+const swagger = require('./src/swagger');
 // @ts-ignore
 const pkg = require('./package.json');
 
