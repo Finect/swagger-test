@@ -1,0 +1,26 @@
+{
+  "name": "@finect/swagger2pm-test",
+  "version": "1.0.129",
+  "description": "Create Postman collection with test from swagger",
+  "preferGlobal": true,
+  "bin": "swagger2pm-test.js",
+  "author": "Omar del Valle Rodríguez",
+  "repository": "https://github.com/Finect/api-v4/develop/packages/swagger-pm-test",
+  "license": "ISC",
+  "engines": {
+    "node": ">=8"
+  },
+  "dependencies": {
+    "colors": "^1.3.0",
+    "commander": "^2.15.1",
+    "newman": "^3.9.3",
+    "node-dir-load": "^0.1.0",
+    "npm": "^6.4.1",
+    "postman-collection": "^3.0.8",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
+    "swagger-parser": "^4.1.0",
+    "underscore": "^1.9.0",
+    "vkbeautify": "^0.99.3"
+  }
+}

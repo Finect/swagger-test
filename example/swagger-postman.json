@@ -1,0 +1,608 @@
+{
+  "item": [
+    {
+      "id": "c72cc6f1-0caf-4ce9-a5cb-fbd3f9b30871",
+      "name": "[201] File uploaded",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "avatars"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "multipart/form-data"
+          },
+          {
+            "key": "key",
+            "value": "{{key}}"
+          }
+        ],
+        "method": "POST",
+        "body": {
+          "mode": "formData",
+          "formdata": [
+            {
+              "key": "upfile",
+              "src": "./avatar.jpg",
+              "type": "file"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "ba30361a-ce03-4b9e-af9f-56e6491b57fa",
+            "type": "text/javascript",
+            "exec": [
+              "tests['The Content-Type should be application/json'] = ",
+              "    postman.getResponseHeader('Content-Type') && ",
+              "    postman.getResponseHeader('Content-Type').includes('application/json');",
+              "tests['Status code should be  201'] = pm.response.code === 201;",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "700b674d-3bbb-4825-ab38-f1aa69fb57ac",
+      "name": "[400] Bad request",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "avatars"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": [
+            {
+              "key": "type",
+              "value": "ZZZZZZZ"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "multipart/form-data"
+          },
+          {
+            "key": "key",
+            "value": "{{key}}"
+          }
+        ],
+        "method": "POST",
+        "body": {
+          "mode": "formData",
+          "formdata": [
+            {
+              "key": "upfile",
+              "value": ""
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "c5f843f8-f9b9-44d0-ae7f-5a3e1170aba7",
+            "type": "text/javascript",
+            "exec": [
+              "tests['The Content-Type should be application/json'] = ",
+              "    postman.getResponseHeader('Content-Type') && ",
+              "    postman.getResponseHeader('Content-Type').includes('application/json');",
+              "tests['Status code should be  400'] = pm.response.code === 400;",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "b72c4ccd-623a-450e-9409-16d99b99ee0e",
+      "name": "[401] Unauthorized",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "avatars"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "multipart/form-data"
+          }
+        ],
+        "method": "POST",
+        "body": {
+          "mode": "formData",
+          "formdata": [
+            {
+              "key": "upfile",
+              "value": ""
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "3259dbe1-77ed-4a28-b055-5a2367807d8a",
+            "type": "text/javascript",
+            "exec": [
+              "tests['The Content-Type should be application/json'] = ",
+              "    postman.getResponseHeader('Content-Type') && ",
+              "    postman.getResponseHeader('Content-Type').includes('application/json');",
+              "tests['Status code should be  401'] = pm.response.code === 401;",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "748991d4-bd62-4e06-95b5-8f02edd4bc89",
+      "name": "[204] on /media/avatars/{avatar}",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "avatars",
+            ":avatar"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": [
+            {
+              "key": "avatar",
+              "value": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "application/json"
+          },
+          {
+            "key": "key",
+            "value": "{{key}}"
+          }
+        ],
+        "method": "DELETE",
+        "body": {
+          "mode": "formData",
+          "formdata": []
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "8d529b38-6c26-41bb-a929-1eca1cd11520",
+            "type": "text/javascript",
+            "exec": [
+              "tests['Status code should be  204'] = pm.response.code === 204;",
+              "",
+              "tests[\"Body is empty\"] = (responseBody===null || responseBody.length===0);",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "6eb68a32-448d-4561-b022-c38b788ce4b1",
+      "name": "[401] Unauthorized",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "avatars",
+            ":avatar"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": [
+            {
+              "key": "avatar",
+              "value": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "application/json"
+          }
+        ],
+        "method": "DELETE",
+        "body": {
+          "mode": "formData",
+          "formdata": []
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "d9d6a813-d5bb-45b6-acec-a244ae930dfa",
+            "type": "text/javascript",
+            "exec": [
+              "tests['The Content-Type should be application/json'] = ",
+              "    postman.getResponseHeader('Content-Type') && ",
+              "    postman.getResponseHeader('Content-Type').includes('application/json');",
+              "tests['Status code should be  401'] = pm.response.code === 401;",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "74c61024-a252-49ac-8f31-8b1b91f9a07b",
+      "name": "[404] on /media/avatars/{avatar}",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "avatars",
+            ":avatar"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": [
+            {
+              "key": "avatar",
+              "value": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "application/json"
+          },
+          {
+            "key": "key",
+            "value": "{{key}}"
+          }
+        ],
+        "method": "DELETE",
+        "body": {
+          "mode": "formData",
+          "formdata": []
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "4c99860e-3d1e-4a60-bd8d-aeb4118727ec",
+            "type": "text/javascript",
+            "exec": [
+              "tests['The Content-Type should be application/json'] = ",
+              "    postman.getResponseHeader('Content-Type') && ",
+              "    postman.getResponseHeader('Content-Type').includes('application/json');",
+              "tests['Status code should be  404'] = pm.response.code === 404;",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "1f9cd1ca-69ae-4c2d-84a3-1fd34668363a",
+      "name": "[201] on /media/images",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "images"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "multipart/form-data"
+          },
+          {
+            "key": "key",
+            "value": "{{key}}"
+          }
+        ],
+        "method": "POST",
+        "body": {
+          "mode": "formData",
+          "formdata": [
+            {
+              "key": "upfile",
+              "value": ""
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "ba8ee7fe-53d3-4fef-aa39-9adf2d6e0433",
+            "type": "text/javascript",
+            "exec": [
+              "tests['The Content-Type should be application/json'] = ",
+              "    postman.getResponseHeader('Content-Type') && ",
+              "    postman.getResponseHeader('Content-Type').includes('application/json');",
+              "tests['Status code should be  201'] = pm.response.code === 201;",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "82aed01c-fe18-4989-a1fb-e02c68fb71b8",
+      "name": "[400] Bad request",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "images"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": [
+            {
+              "key": "type",
+              "value": "ZZZZZZZ"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "multipart/form-data"
+          },
+          {
+            "key": "key",
+            "value": "{{key}}"
+          }
+        ],
+        "method": "POST",
+        "body": {
+          "mode": "formData",
+          "formdata": [
+            {
+              "key": "upfile",
+              "value": ""
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "962474d2-7325-49a5-accb-6fc2820b0685",
+            "type": "text/javascript",
+            "exec": [
+              "tests['The Content-Type should be application/json'] = ",
+              "    postman.getResponseHeader('Content-Type') && ",
+              "    postman.getResponseHeader('Content-Type').includes('application/json');",
+              "tests['Status code should be  400'] = pm.response.code === 400;",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "00007cc6-9267-4ae5-a298-29d671dc8ee2",
+      "name": "[401] Unauthorized",
+      "request": {
+        "url": {
+          "path": [
+            "",
+            "media",
+            "images"
+          ],
+          "host": [
+            "{{base-url}}"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "header": [
+          {
+            "key": "accept",
+            "value": "application/json"
+          },
+          {
+            "key": "content-type",
+            "value": "multipart/form-data"
+          }
+        ],
+        "method": "POST",
+        "body": {
+          "mode": "formData",
+          "formdata": [
+            {
+              "key": "upfile",
+              "value": ""
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "id": "ff050dc2-9515-41c3-ac2e-ed835c32123f",
+            "type": "text/javascript",
+            "exec": [
+              "tests['The Content-Type should be application/json'] = ",
+              "    postman.getResponseHeader('Content-Type') && ",
+              "    postman.getResponseHeader('Content-Type').includes('application/json');",
+              "tests['Status code should be  401'] = pm.response.code === 401;",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "id": "base-url",
+      "type": "string",
+      "value": "https://stage-api.finect.com/v4",
+      "key": "base-url"
+    },
+    {
+      "id": "user",
+      "type": "string",
+      "value": "bd680aa16d9111e8a11a02000af001c9",
+      "key": "user"
+    },
+    {
+      "id": "authorizationRequest",
+      "type": "string",
+      "value": "6E8B3B68A38244DFBDC554D15DC65B75",
+      "key": "authorizationRequest"
+    },
+    {
+      "id": "Authorization",
+      "type": "string",
+      "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwOElxbURZRmQzTm5mNVBRaGJieGpFb2FwYzBMVE5WbCIsImlhdCI6MTUzMzcyNzE5NCwiZXhwIjoxNTY1Mjg0Nzk0LCJhdWQiOiJmaW5lY3QuY29tIiwic3ViIjoiMDAxMmZlMGMzODYwMTFlNDkzNzFhNjgyZmUwYzM4NjAxMWU0OTM3MWE2OCIsIlJvbGUiOlsiYWxsIl19.z5Mbr8OlQoDCOoSdkYDz4mLcSIJ94wOPm7YYDneJPWc",
+      "key": "Authorization"
+    },
+    {
+      "id": "AuthorizationUser",
+      "type": "string",
+      "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwOElxbURZRmQzTm5mNVBRaGJieGpFb2FwYzBMVE5WbCIsImlhdCI6MTUzMzcyNzE5NCwiZXhwIjoxNTY1Mjg0Nzk0LCJhdWQiOiJmaW5lY3QuY29tIiwic3ViIjoiYmQ2ODBhYTE2ZDkxMTFlOGExMWEwMjAwMGFmMDAxYzkiLCJSb2xlIjpbImFsbCJdfQ.mb5O1azCYGd61wytGiT5XpwBqryG_DbI71MMuM4JbgY",
+      "key": "AuthorizationUser"
+    }
+  ],
+  "info": {
+    "_postman_id": "7e7a55cc-fae0-46e4-b790-932c50a9db26",
+    "name": "Media v4",
+    "version": {
+      "raw": "4.0.0",
+      "major": 4,
+      "minor": 0,
+      "patch": 0,
+      "prerelease": [],
+      "build": [],
+      "string": "4.0.0"
+    },
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  }
+}

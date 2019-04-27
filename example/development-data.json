@@ -1,0 +1,8 @@
+[
+    {
+        "user": "bd680aa16d9111e8a11a02000af001c9",
+        "authorizationRequest": "6E8B3B68A38244DFBDC554D15DC65B75",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwOElxbURZRmQzTm5mNVBRaGJieGpFb2FwYzBMVE5WbCIsImlhdCI6MTUzMzcyNzE5NCwiZXhwIjoxNTY1Mjg0Nzk0LCJhdWQiOiJmaW5lY3QuY29tIiwic3ViIjoiMDAxMmZlMGMzODYwMTFlNDkzNzFhNjgyZmUwYzM4NjAxMWU0OTM3MWE2OCIsIlJvbGUiOlsiYWxsIl19.z5Mbr8OlQoDCOoSdkYDz4mLcSIJ94wOPm7YYDneJPWc",
+        "AuthorizationUser": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwOElxbURZRmQzTm5mNVBRaGJieGpFb2FwYzBMVE5WbCIsImlhdCI6MTUzMzcyNzE5NCwiZXhwIjoxNTY1Mjg0Nzk0LCJhdWQiOiJmaW5lY3QuY29tIiwic3ViIjoiYmQ2ODBhYTE2ZDkxMTFlOGExMWEwMjAwMGFmMDAxYzkiLCJSb2xlIjpbImFsbCJdfQ.mb5O1azCYGd61wytGiT5XpwBqryG_DbI71MMuM4JbgY"
+    }
+]
