@@ -6,20 +6,17 @@ const swagger = require('./src/swagger');
 // @ts-ignore
 const pkg = require('./package.json');
 
-// Only for test
-process.env.NODE_TLS_REJECT_UNAUTHORIZED="0";
-
 program
   .version(pkg.version, '-v, --version')
   .usage('<JSON or YAML Swagger file definition> [options]')
   .arguments('<file>')
   .option('-g --global [var]', 'Add global variables', (option, options) => {
     try {
-        option.split(',').forEach(e => {
-            var global = e.trim().split('=')
-            options.push({ name: global[0].trim(), value: global[1].trim() });            
-        });
-    } catch(err) {
+      option.split(',').forEach(e => {
+        var global = e.trim().split('=');
+        options.push({ name: global[0].trim(), value: global[1].trim() });            
+      });
+    } catch (err) {
       process.stdout.write('Invalid global variables option. Use var1=value1,var2=value2\n'); 
       throw err;
     }

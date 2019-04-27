@@ -19,7 +19,6 @@ const Endpoints = require('./collection-endpoints');
  * 
 */
 module.exports = async (swagger, options) => {
-
   const absSwaggerFile = path.resolve(swagger);
   const absDataFile = options.run && typeof options.run === 'string' ? path.resolve(options.run) : null;
 
@@ -32,7 +31,7 @@ module.exports = async (swagger, options) => {
           
     globalData.forEach(data => {
       Object.keys(data).forEach(key => { 
-        options.global.push({ name: key, value: data[key] })
+        options.global.push({ name: key, value: data[key] });
         if (key.length > maxLength) maxLength = key.length;
       });
     });
@@ -47,21 +46,21 @@ module.exports = async (swagger, options) => {
   process.chdir(__dirname); 
 
   try {
-    const api = await swaggerParser.validate(absSwaggerFile)
+    const api = await swaggerParser.validate(absSwaggerFile);
 
-    let endpoints = new Endpoints(api, options.global, options.tokenUrl);
+    const endpoints = new Endpoints(api, options.global, options.tokenUrl);
     api.paths.forEach((path, key) => {
       endpoints.parse(path, key);
     });   
     
     process.stdout.write('\nTesting endpoints definition\n');
 
-    let collection = await endpoints.export(/** @param {string} url */url => {
+    const collection = await endpoints.export(/** @param {string} url */url => {
       process.stdout.write('→ ' + url + '\n');
     });
 
     if (options.save) {
-      let fileCollection = absSwaggerFile.substr(0, absSwaggerFile.lastIndexOf(".")) + '-postman.json';
+      const fileCollection = absSwaggerFile.substr(0, absSwaggerFile.lastIndexOf('.')) + '-postman.json';
       fs.writeFileSync(fileCollection, JSON.stringify(collection, null, 2));
       
       process.stdout.write('\nPostman collection exported to: ' + fileCollection + '\n');
@@ -78,17 +77,15 @@ module.exports = async (swagger, options) => {
       process.stdout.write('\nOption --run detected. Using newman to run collection.\n');
       newman.run(newmanOptions, (err, summary) => {
         if (err) { throw err; }
-        if (summary.run.failures.length > 0)
-        {
+        if (summary.run.failures.length > 0) {
           process.stdout.write(summary.run.failures.length + ' assertions failed.\n');
-            throw new Error(`${summary.run.failures.length} assertions failed.`);
+          throw new Error(`${summary.run.failures.length} assertions failed.`);
         }
 
         process.stdout.write('collection run complete!\n');
       });                
     }
-  }
-  catch(err) {
-      throw err;
+  } catch (err) {
+    throw err;
   }
 };

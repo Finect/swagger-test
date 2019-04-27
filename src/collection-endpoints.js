@@ -4,7 +4,7 @@ const Endpoint = require('./endpoint');
 const deinitionTests = require('./definition-test');
 
 const request = require('request-promise-native');
-const ps = require('postman-collection')
+const ps = require('postman-collection');
 
 class Endpoints {
   /**
@@ -14,15 +14,14 @@ class Endpoints {
    * @param {string} tokenUrl Url to get OAuth token
    * @memberof Endpoints
    */
-  constructor(swagger, globalVariables, tokenUrl)
-  {
+  constructor (swagger, globalVariables, tokenUrl) {
     this.swagger = swagger;
     this.endpoints = [];
     this.globalVariables = globalVariables;
     this.tokenUrl = tokenUrl;
   }
 
-  parse(path, url) {
+  parse (path, url) {
     path.forEach((def, /** @type {string} */method) => {
       if (method.startsWith('x-')) return;
 
@@ -30,15 +29,15 @@ class Endpoints {
         consumes: this.swagger.consumes,
         produces: this.swagger.produces,
         schemes: this.swagger.schemes
-      }
+      };
 
-      let endpoint = new Endpoint(method, url, def, swaggerCommons);
+      const endpoint = new Endpoint(method, url, def, swaggerCommons);
       if (endpoint) this.endpoints.push(endpoint);
     });
   }
 
-  async export(onExportEndpoint) {
-    let collection = new ps.Collection({
+  async export (onExportEndpoint) {
+    const collection = new ps.Collection({
       info: {
         name: this.swagger.info.title,
         version: this.swagger.info.version
@@ -48,10 +47,9 @@ class Endpoints {
     let securities;
     let security;
     if (this.swagger.securityDefinitions) {
-
-      const securityValues = this.globalVariables.filter( obj => {
-        return obj.name == 'client_id' || obj.name == 'client_secret' 
-          || obj.name == 'username' || obj.name == 'password'
+      const securityValues = this.globalVariables.filter(obj => {
+        return obj.name === 'client_id' || obj.name === 'client_secret' || 
+          obj.name === 'username' || obj.name === 'password';
       }) || [];
 
       this.swagger.securityDefinitions.value = securityValues.reduce((obj, item) => {
@@ -72,12 +70,11 @@ class Endpoints {
 
     let definitionTestsPassed = true;
     this.endpoints.forEach(endpoint => { 
-
       if (this.swagger.securityDefinitions && endpoint.def.security) {
         const key = Object.keys(endpoint.def.security[0])[0];
         security = securities[key];
 
-        if (security.variable && !this.globalVariables.some(v => v.name === security.variable.name)) {
+        if (security.variable && !this.globalVariables.some(variable => variable.name === security.variable.name)) {
           this.globalVariables.push(security.variable);
         }
       }
@@ -131,11 +128,11 @@ class Endpoints {
   }
 }
 
-async function getSecurities(securityDef, tokenUrl) {
-    let security = {};
+async function getSecurities (securityDef, tokenUrl) {
+  const security = {};
 
-  if (securityDef.hasOwnProperty('oauth2') && securityDef.oauth2.flow == 'password') {
-    const b = Buffer.from(securityDef.value.client_id +':'+ securityDef.value.client_secret);
+  if (securityDef.hasOwnProperty('oauth2') && securityDef.oauth2.flow === 'password') {
+    const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
 
     const authRequest = {
       url: tokenUrl || securityDef.oauth2.tokenUrl,
@@ -162,17 +159,16 @@ async function getSecurities(securityDef, tokenUrl) {
         },
         variable: {
           name: 'oauth2_token',
-          value: result.token_type +' '+ result.access_token 
+          value: result.token_type + ' ' + result.access_token 
         }
-      }    
+      };    
     } catch (error) { 
       process.stdout.write(error); 
     }
   }
 
-
   if (securityDef.hasOwnProperty('basicAuth')) {
-    const b = Buffer.from(securityDef.value.client_id +':'+ securityDef.value.client_secret);
+    const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
 
     security.basicAuth = {
       param: {
@@ -184,7 +180,7 @@ async function getSecurities(securityDef, tokenUrl) {
         name: 'basicAuth_token',
         value: 'Basic ' + b.toString('base64') 
       }
-    }
+    };
   }
 
   if (securityDef.hasOwnProperty('APIKeyHeader')) {
@@ -192,9 +188,9 @@ async function getSecurities(securityDef, tokenUrl) {
       param: {
         in: 'header',
         name: securityDef['APIKeyHeader'].name,
-        value: '{{'+securityDef['APIKeyHeader'].name+'}}'                
+        value: '{{' + securityDef['APIKeyHeader'].name + '}}'                
       }
-    }
+    };
   }
 
   if (securityDef.hasOwnProperty('APIKeyQueryParam')) {
@@ -202,9 +198,9 @@ async function getSecurities(securityDef, tokenUrl) {
       param: {
         in: 'query',
         name: securityDef['APIKeyHeader'].name,
-        value: '{{'+securityDef['APIKeyHeader'].name+'}}'
+        value: '{{' + securityDef['APIKeyHeader'].name + '}}'
       }
-    }
+    };
   }
 
   if (securityDef.hasOwnProperty('Bearer')) {
@@ -212,9 +208,9 @@ async function getSecurities(securityDef, tokenUrl) {
       param: {
         in: 'header',
         name: securityDef['Bearer'].name,
-        value: '{{'+securityDef['Bearer'].name+'}}'                
+        value: '{{' + securityDef['Bearer'].name + '}}'                
       }
-    }
+    };
   }    
 
   return security;

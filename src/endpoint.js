@@ -6,7 +6,15 @@ const vkbeautify = require('vkbeautify');
 const Events = require('./events');
 
 class Endpoint {
-  constructor(method, url, def, swaggerCommons) {
+  /**
+   * Creates an instance of Endpoint.
+   * @param {string} method
+   * @param {string} url
+   * @param {*} def
+   * @param {*} swaggerCommons
+   * @memberof Endpoint
+   */
+  constructor (method, url, def, swaggerCommons) {
     this.method = method;
     this.url = url;
     this.def = def;
@@ -15,10 +23,10 @@ class Endpoint {
     this.postmanItems = [];
   }
 
-  export(globalTests, security) {
+  export (globalTests, security) {
     this.globalTests = {
-      parameters: globalTests && globalTests['params'] || [], 
-      tests: globalTests && globalTests['tests'] || [] 
+      parameters: (globalTests && globalTests['params']) || [], 
+      tests: (globalTests && globalTests['tests']) || [] 
     };
 
     this.security = security;
@@ -28,7 +36,7 @@ class Endpoint {
   }
 }
 
-function buildPostmanItems(endpoint) {
+function buildPostmanItems (endpoint) {
   const produces = endpoint.def.produces || endpoint.swaggerCommons.produces;
   const consumes = endpoint.def.consumes || endpoint.swaggerCommons.consumes;
 
@@ -36,54 +44,56 @@ function buildPostmanItems(endpoint) {
     produces.forEach(accept => {
       endpoint.def.responses.forEach((response, /** @type {string} */status) => {
         let tests = response['x-pm-test'] || [];
-        if (tests.length == 0 && status !== 'default') tests = buildDefaultsTest(endpoint, status);
+        if (tests.length === 0 && status !== 'default') tests = buildDefaultsTest(endpoint, status);
 
-        let globalParameters = endpoint.globalTests.parameters.filter(p => {
-            let responses = p.except && p.except.responses || [];
-            let methods = p.except && p.methods || [];
+        const globalParameters = endpoint.globalTests.parameters.filter(p => {
+          const responses = (p.except && p.except.responses) || [];
+          const methods = (p.except && p.methods) || [];
 
-            return !responses.map(String).includes(status) && !methods.includes(endpoint.method); 
+          return !responses.map(String).includes(status) && !methods.includes(endpoint.method); 
         });
 
-        let globalTests = getGlobalsTest(endpoint, status);             
+        const globalTests = getGlobalsTest(endpoint, status);             
         tests.forEach(test => {
-            test.params = test.params || [];
+          test.params = test.params || [];
 
-            // add globals parameters if not exist in test
-            test.params = (globalParameters || []).filter(dp => dp.in != 'body').reduce((acc, p) => {
-                if (!acc.find(pl => pl.name == p.name && pl.in == p.in)) acc.push(p);
-                return acc;
-            }, test.params);
+          // add globals parameters if not exist in test
+          test.params = (globalParameters || []).filter(dp => dp.in !== 'body').reduce((acc, p) => {
+            if (!acc.find(pl => pl.name === p.name && pl.in === p.in)) acc.push(p);
+            return acc;
+          }, test.params);
 
-            //add all parameters in defenition if not exist in test
-            test.params = (endpoint.def.parameters || []).filter(dp => dp.in != 'body').reduce((acc, p) => {
-                if (!acc.find(pl => p.name == pl.name && p.in == pl.in)) acc.push({
-                    name: p.name,
-                    in: p.in,
-                    value: p['x-pm-test-value'] || p.default || p.minimum || defaultVal(p),
-                    disabled: true
-                });
-                
-                return acc;
-            }, test.params);
+          //add all parameters in defenition if not exist in test
+          test.params = (endpoint.def.parameters || []).filter(dp => dp.in !== 'body').reduce((acc, p) => {
+            if (!acc.find(pl => p.name === pl.name && p.in === pl.in)) {
+              acc.push({
+                name: p.name,
+                in: p.in,
+                value: p['x-pm-test-value'] || p.default || p.minimum || defaultVal(p),
+                disabled: true
+              });
+            }
+            
+            return acc;
+          }, test.params);
 
-            test.raw = (test.raw || '') + globalTests;
+          test.raw = (test.raw || '') + globalTests;
 
-            if (status !== '401' && endpoint.security && !test.params.find(p => endpoint.security.param.name == p.name 
-                && endpoint.security.param.in == p.in)) test.params.push(endpoint.security.param);
+          if (status !== '401' && endpoint.security && 
+            !test.params.find(p => endpoint.security.param.name === p.name && 
+              endpoint.security.param.in === p.in)) test.params.push(endpoint.security.param);
 
-            endpoint.postmanItems.push(buildPostmanItem(endpoint.method, endpoint.url, test, content, accept, status));
+          endpoint.postmanItems.push(buildPostmanItem(endpoint.method, endpoint.url, test, content, accept, status));
         });
       });
     });
   });
 }
 
-function getGlobalsTest(endpoint, status) {
+function getGlobalsTest (endpoint, status) {
   let raw = '';
   endpoint.globalTests.tests.forEach(test => {
-    if (!test.except.responses.map(String).includes(status) 
-      && !test.except.methods.includes(endpoint.method)) {
+    if (!test.except.responses.map(String).includes(status) && !test.except.methods.includes(endpoint.method)) {
       raw += test.raw;
     }
   });
@@ -91,9 +101,9 @@ function getGlobalsTest(endpoint, status) {
   return raw;
 }
 
-function buildDefaultsTest(endpoint, status) {
-  let tests = [{
-    "description": '['+ status + ']' + ' on ' + endpoint.url,
+function buildDefaultsTest (endpoint, status) {
+  const tests = [{
+    description: `['${status}'] on ${endpoint.url}`,
   }];
 
   if (!endpoint.def.parameters) return tests;
@@ -111,7 +121,7 @@ function buildDefaultsTest(endpoint, status) {
   return tests;
 }
 
-function buildPostmanItem(method, path, test, content, accept, status) {
+function buildPostmanItem (method, path, test, content, accept, status) {
   let url = path;
 
   const headerParam = test.params.filter(param => param.in === 'header');
@@ -119,20 +129,20 @@ function buildPostmanItem(method, path, test, content, accept, status) {
   const formParameters = test.params.filter(param => param.in === 'formData');
   const urlVariables = [];
 
-  let bodyParam = test.params.find(param => param.in === 'body');
+  const bodyParam = test.params.find(param => param.in === 'body');
 
   pathParameters.forEach(param => {
     urlVariables.push({ key: param.name, value: param.value });
-    url = url.replace('{'+param.name+'}', ':'+param.name);
+    url = url.replace(`{${param.name}}`, `:${param.name}`);
   });
 
-  let item = new Item({
-    name: (test.description || '['+ status + ']' + ' on ' + url).replace('[url]', url),
+  const item = new Item({
+    name: (test.description || `[${status}] on ${url}`).replace('[url]', url),
     request: {
       method: method,
       url: {
         // @ts-ignore
-        raw: '{{base-url}}'+ url,
+        raw: '{{base-url}}' + url,
         host: [ '{{base-url}}' ],
         path: url.split('/'),
         query: []
@@ -156,7 +166,11 @@ function buildPostmanItem(method, path, test, content, accept, status) {
 
   if (headerParam.length > 0) {
     headerParam.forEach(header => {
-      item.request.headers.members.push({key: header.name, value: header.value, disabled: header.disabled});
+      item.request.headers.members.push({
+        key: header.name, 
+        value: header.value, 
+        disabled: header.disabled
+      });
     });  
   }
 
@@ -188,22 +202,22 @@ function buildPostmanItem(method, path, test, content, accept, status) {
   return item;
 }
 
-function defaultVal(parameter) {
+function defaultVal (parameter) {
   if (parameter.in === 'body') return '';
 
-  let type = parameter.items ? parameter.items.type : parameter.type;    
+  const type = parameter.items ? parameter.items.type : parameter.type;    
   if (typeof type !== 'string') throw new TypeError('Type must be a string.');
 
   // Handle simple types (primitives and plain function/object)
   switch (type) {
-    case 'boolean'   : return 'false';
-    case 'integer'   : 
-    case 'number'    : return '0';
-    case 'string'    : {
-        // TODO: check format (date, date-time, enums, etc.)
-        return 'string'; 
-    }
-    default : return '';
+  case 'boolean': return 'false';
+  case 'integer': 
+  case 'number': return '0';
+  case 'string': {
+    // TODO: check format (date, date-time, enums, etc.)
+    return 'string'; 
+  }
+  default : return '';
   }
 }
 

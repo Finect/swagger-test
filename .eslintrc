@@ -1,19 +1,23 @@
 {
-  "extends": ["eslint:recommended", "plugin:node/recommended"],
+  "extends": "standard",
   "parserOptions": {
     "ecmaVersion": 2017,
     "sourceType": "module"
   },
   "rules": {
-      "no-console": "off",
+      "semi":["error", "always"],
+      "camelcase":"off",
+      "comma-dangle":"off",
+      "indent":["error", 2],
+      "prefer-const": ["error", {
+          "destructuring": "any",
+          "ignoreReadBeforeAssign": false
+      }],      
       "spaced-comment": "off",
-      "arrow-body-style": "off",
       "no-undefined": "off",
       "max-len": ["error", { "code": 120 }],
       "no-trailing-spaces": "off",
-      "no-param-reassign": ["error", { "props": false }],
-      "arrow-parens": ["error", "as-needed"],
-      "no-use-before-define": ["error", { "functions": false, "classes": false, "variables": false }] 
+      "arrow-parens": ["error", "as-needed"]
   },
   "env": {
     "mocha": true
