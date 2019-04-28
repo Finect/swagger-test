@@ -12,10 +12,10 @@ const Endpoints = require('./collection-endpoints');
 /**  
  * @param {string} swagger Path to swagger file
  * @param {object} options Options parameters
- * @param {boolean | string} options.run Run postman collection using, optionally, data file 
- * @param {boolean} options.save Save postman collection 
- * @param {Array<any>} options.global Globals options
- * @param {string} options.tokenUrl Url to resolve OAuth token (only support grant type: password)  
+ * @param {boolean | string} [options.run] Run postman collection using, optionally, data file 
+ * @param {boolean} [options.save] Save postman collection 
+ * @param {Array<any>} [options.global] Globals options
+ * @param {string} [options.tokenUrl] Url to resolve OAuth token (only support grant type: password)  
  * 
 */
 module.exports = async (swagger, options) => {
@@ -36,7 +36,7 @@ module.exports = async (swagger, options) => {
       });
     });
 
-    options.global.forEach(option => {
+    (options.global || []).forEach(option => {
       process.stdout.write(`\n${colors.green(option.name.padStart(maxLength))}: ${option.value}`);
     });
 
@@ -49,8 +49,8 @@ module.exports = async (swagger, options) => {
     const api = await swaggerParser.validate(absSwaggerFile);
 
     const endpoints = new Endpoints(api, options.global, options.tokenUrl);
-    api.paths.forEach((path, key) => {
-      endpoints.parse(path, key);
+    Object.keys(api.paths).forEach(path => {
+      endpoints.parse(path, api.paths[path]);
     });   
     
     process.stdout.write('\nTesting endpoints definition\n');

@@ -9,7 +9,7 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
+host: "localhost:3000"
 basePath: "/v2"
 tags:
 - name: "pet"
@@ -26,20 +26,9 @@ tags:
     url: "http://swagger.io"
 schemes:
 - "http"
-
-x-pm-test:
-  except: 
-    responses: [201]
-    methods: [ delete ]
-  raw: |
-    var body = JSON.parse(responseBody);
-    tests['Internal code response is ok'] = body.code === pm.response.code; 
-
 paths:
   /pet:
-    x-swagger-router-controller: stocks
     post:
-      x-not-implemented: true
       tags:
       - "pet"
       summary: "Add a new pet to the store"
@@ -47,9 +36,7 @@ paths:
       operationId: "addPet"
       consumes:
       - "application/json"
-      - "application/xml"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - in: "body"
@@ -58,38 +45,9 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Pet"
-      - in: header
-        name: authorization
-        required: true
-        type: string
       responses:
         405:
           description: "Invalid input"
-          x-pm-test:
-            - description: I Can POST invalid input
-              params:
-                - in: header
-                  name: authorization
-                  value: "{{token}}"
-                - in: body
-                  application/json: {
-                    "id": 0,
-                    "category": {
-                      "id": 0,
-                      "name": "string"
-                    },
-                    "name": "doggie",
-                    "photoUrls": [
-                      "string"
-                    ],
-                    "tags": [
-                      {
-                        "id": 0,
-                        "name": "string"
-                      }
-                    ],
-                    "status": "available"
-                  }
       security:
       - petstore_auth:
         - "write:pets"
@@ -102,9 +60,7 @@ paths:
       operationId: "updatePet"
       consumes:
       - "application/json"
-      - "application/xml"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - in: "body"
@@ -113,11 +69,6 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Pet"
-      - in: header
-        name: authorization
-        required: true
-        type: string
-        x-pm-test-value: "{{token}}"
       responses:
         400:
           description: "Invalid ID supplied"
@@ -137,7 +88,6 @@ paths:
       description: "Multiple status values can be provided with comma separated strings"
       operationId: "findPetsByStatus"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "status"
@@ -160,29 +110,8 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Pet"
-          x-pm-test:
-            - description: I Can GET [available] status
-              params:
-                - name: status
-                  in: query
-                  value: "available"
-            - description: I Can GET [available, pending] status
-              params:
-                - name: status
-                  in: query
-                  value: "available"
-                - name: status
-                  in: query
-                  value: "pending"
         400:
           description: "Invalid status value"
-          x-pm-test:
-            - description: I Can GET invalid status
-              params:
-                - name: status
-                  in: query
-                  value: "mmmmm"
-
       security:
       - petstore_auth:
         - "write:pets"
@@ -195,7 +124,6 @@ paths:
       description: "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing."
       operationId: "findPetsByTags"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "tags"
@@ -228,7 +156,6 @@ paths:
       description: "Returns a single pet"
       operationId: "getPetById"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "petId"
@@ -237,7 +164,6 @@ paths:
         required: true
         type: "integer"
         format: "int64"
-        x-pm-example: 234
       responses:
         200:
           description: "successful operation"
@@ -258,7 +184,6 @@ paths:
       consumes:
       - "application/x-www-form-urlencoded"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "petId"
@@ -267,7 +192,6 @@ paths:
         required: true
         type: "integer"
         format: "int64"
-        x-pm-example: 234
       - name: "name"
         in: "formData"
         description: "Updated name of the pet"
@@ -292,7 +216,6 @@ paths:
       description: ""
       operationId: "deletePet"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "api_key"
@@ -379,7 +302,6 @@ paths:
       description: ""
       operationId: "placeOrder"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - in: "body"
@@ -403,7 +325,6 @@ paths:
       description: "For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions"
       operationId: "getOrderById"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "orderId"
@@ -430,7 +351,6 @@ paths:
       description: "For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors"
       operationId: "deleteOrder"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "orderId"
@@ -453,7 +373,6 @@ paths:
       description: "This can only be done by the logged in user."
       operationId: "createUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - in: "body"
@@ -473,7 +392,6 @@ paths:
       description: ""
       operationId: "createUsersWithArrayInput"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - in: "body"
@@ -495,7 +413,6 @@ paths:
       description: ""
       operationId: "createUsersWithListInput"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - in: "body"
@@ -517,7 +434,6 @@ paths:
       description: ""
       operationId: "loginUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "username"
@@ -554,7 +470,6 @@ paths:
       description: ""
       operationId: "logoutUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters: []
       responses:
@@ -568,7 +483,6 @@ paths:
       description: ""
       operationId: "getUserByName"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "username"
@@ -592,7 +506,6 @@ paths:
       description: "This can only be done by the logged in user."
       operationId: "updateUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "username"
@@ -618,7 +531,6 @@ paths:
       description: "This can only be done by the logged in user."
       operationId: "deleteUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "username"
@@ -752,25 +664,6 @@ definitions:
         - "sold"
     xml:
       name: "Pet"
-    example: {
-      "id": 0,
-      "category": {
-        "id": 0,
-        "name": "string"
-      },
-      "name": "doggie",
-      "photoUrls": [
-        "string"
-      ],
-      "tags": [
-        {
-          "id": 0,
-          "name": "string"
-        }
-      ],
-      "status": "available"
-    }      
-
   ApiResponse:
     type: "object"
     properties:

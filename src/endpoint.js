@@ -2,6 +2,7 @@
 
 const Item = require('postman-collection').Item;
 const vkbeautify = require('vkbeautify');
+const jsf = require('json-schema-faker');
 
 const Events = require('./events');
 
@@ -40,9 +41,12 @@ function buildPostmanItems (endpoint) {
   const produces = endpoint.def.produces || endpoint.swaggerCommons.produces;
   const consumes = endpoint.def.consumes || endpoint.swaggerCommons.consumes;
 
+  /** @todo Only support application/json */ 
   consumes.forEach(content => {
     produces.forEach(accept => {
-      endpoint.def.responses.forEach((response, /** @type {string} */status) => {
+      Object.keys(endpoint.def.responses).forEach(status => {
+        const response = endpoint.def.responses[status];
+
         let tests = response['x-pm-test'] || [];
         if (tests.length === 0 && status !== 'default') tests = buildDefaultsTest(endpoint, status);
 
@@ -203,7 +207,7 @@ function buildPostmanItem (method, path, test, content, accept, status) {
 }
 
 function defaultVal (parameter) {
-  if (parameter.in === 'body') return '';
+  if (parameter.in === 'body') return { 'application/json:': jsf.generate(parameter.schema) };
 
   const type = parameter.items ? parameter.items.type : parameter.type;    
   if (typeof type !== 'string') throw new TypeError('Type must be a string.');

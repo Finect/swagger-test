@@ -17,13 +17,14 @@ class Endpoints {
   constructor (swagger, globalVariables, tokenUrl) {
     this.swagger = swagger;
     this.endpoints = [];
-    this.globalVariables = globalVariables;
+    this.globalVariables = globalVariables || [];
     this.tokenUrl = tokenUrl;
   }
 
-  parse (path, url) {
-    path.forEach((def, /** @type {string} */method) => {
+  parse (path, methods) {
+    Object.keys(methods).forEach(method => {
       if (method.startsWith('x-')) return;
+      const def = methods[method];
 
       const swaggerCommons = {
         consumes: this.swagger.consumes,
@@ -31,7 +32,7 @@ class Endpoints {
         schemes: this.swagger.schemes
       };
 
-      const endpoint = new Endpoint(method, url, def, swaggerCommons);
+      const endpoint = new Endpoint(method, path, def, swaggerCommons);
       if (endpoint) this.endpoints.push(endpoint);
     });
   }
@@ -74,7 +75,8 @@ class Endpoints {
         const key = Object.keys(endpoint.def.security[0])[0];
         security = securities[key];
 
-        if (security.variable && !this.globalVariables.some(variable => variable.name === security.variable.name)) {
+        if (security && security.variable && 
+          !this.globalVariables.some(variable => variable.name === security.variable.name)) {
           this.globalVariables.push(security.variable);
         }
       }
@@ -82,7 +84,7 @@ class Endpoints {
       let members = endpoint.export(this.swagger['x-pm-test'], security);     
       let folder;   
       if (endpoint.def.tags && endpoint.def.tags.length > 0) {
-        folder = collection.items.members.find(member => member.name == endpoint.def.tags[0]);
+        folder = collection.items.members.find(member => member.name === endpoint.def.tags[0]);
         if (folder) folder.item = folder.item.concat(members);
         else members = { name: endpoint.def.tags[0], item: members };
       }
