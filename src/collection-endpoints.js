@@ -48,18 +48,23 @@ class Endpoints {
 
     let securities;
     let security;
+    const securityDefinitions = { securities: [] };
+    Object.keys(this.swagger.securityDefinitions).forEach(sec => {
+      securityDefinitions.securities.push(Object.assign({ name: sec }, this.swagger.securityDefinitions[sec]));
+    });
+
     if (this.swagger.securityDefinitions) {
       const securityValues = this.globalVariables.filter(obj => {
         return obj.name === 'client_id' || obj.name === 'client_secret' || 
           obj.name === 'username' || obj.name === 'password';
       }) || [];
 
-      this.swagger.securityDefinitions.value = securityValues.reduce((obj, item) => {
+      securityDefinitions.value = securityValues.reduce((obj, item) => {
         obj[item.name] = item.value;
         return obj;
       }, {});
 
-      securities = await getSecurities(this.swagger.securityDefinitions, this.tokenUrl);
+      securities = await getSecurities(securityDefinitions, this.tokenUrl);
 
       if (this.swagger.security) {
         // Get first security key
@@ -95,7 +100,7 @@ class Endpoints {
 
       // Test definition
       definitionTestsPassed = deinitionTests
-        .definitionTestsPassed(endpoint, this.swagger.security) && definitionTestsPassed;
+        .definitionTestsPassed(endpoint, this.swagger.security || endpoint.def.security) && definitionTestsPassed;
     });
 
     if (!definitionTestsPassed) {
@@ -138,87 +143,88 @@ class Endpoints {
 async function getSecurities (securityDef, tokenUrl) {
   const security = {};
 
-  if (securityDef.hasOwnProperty('oauth2') && securityDef.oauth2.flow === 'password') {
-    const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
+  // only support password flow 
+  const oauth2 = securityDef.securities.find(security => security.type === 'oauth2');
+  if (oauth2) {
+    switch (oauth2.flow) {
+    case 'password': 
+      const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
 
-    const authRequest = {
-      url: tokenUrl || securityDef.oauth2.tokenUrl,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic ' + b.toString('base64')
-      },
-      form: {
-        grant_type: 'password',
-        scope: Object.keys(securityDef.oauth2.scopes).join(','),
-        username: securityDef.value.username,
-        password: securityDef.value.password
+      const authRequest = {
+        url: tokenUrl || oauth2.tokenUrl,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Basic ' + b.toString('base64')
+        },
+        form: {
+          grant_type: security.flow,
+          scope: Object.keys(oauth2.scopes).join(','),
+          username: securityDef.value.username,
+          password: securityDef.value.password
+        }
+      };
+        
+      try {
+        const response = await request.post(authRequest);
+        const result = JSON.parse(response);
+        security[oauth2.name] = {
+          param: {
+            in: 'header',
+            name: 'Authorization',
+            value: `{{${oauth2.name}}}`
+          },
+          variable: {
+            name: oauth2.name,
+            value: result.token_type + ' ' + result.access_token 
+          }
+        };    
+      } catch (error) { 
+        process.stdout.write(error); 
       }
-    };
-      
-    try {
-      const response = await request.post(authRequest);
-      const result = JSON.parse(response);
-      security.oauth2 = {
+
+      break;
+    default:
+      security[oauth2.name] = {
         param: {
           in: 'header',
           name: 'Authorization',
-          value: '{{oauth2_token}}'
+          value: `{{${oauth2.name}}}`
         },
         variable: {
-          name: 'oauth2_token',
-          value: result.token_type + ' ' + result.access_token 
+          name: oauth2.name,
+          value: 'unsupported'
         }
-      };    
-    } catch (error) { 
-      process.stdout.write(error); 
+      };  
     }
   }
 
-  if (securityDef.hasOwnProperty('basicAuth')) {
+  const basic = securityDef.securities.find(security => security.type === 'basic');
+  if (basic) {
     const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
 
-    security.basicAuth = {
+    security[basic.name] = {
       param: {
         in: 'header',
         name: 'Authorization',
-        value: '{{basicAuth_token}}'
+        value: `{{${basic.name}}}`
       },
       variable: {
-        name: 'basicAuth_token',
+        name: basic.name,
         value: 'Basic ' + b.toString('base64') 
       }
     };
   }
 
-  if (securityDef.hasOwnProperty('APIKeyHeader')) {
-    security.APIKeyHeader = {
+  const apiKey = securityDef.securities.find(security => security.type === 'apiKey');
+  if (apiKey) {
+    security[apiKey.name] = {
       param: {
-        in: 'header',
-        name: securityDef['APIKeyHeader'].name,
-        value: '{{' + securityDef['APIKeyHeader'].name + '}}'                
+        in: apiKey.in,
+        name: apiKey.name,
+        value: `{{${apiKey.name}}}`                
       }
     };
   }
-
-  if (securityDef.hasOwnProperty('APIKeyQueryParam')) {
-    security.APIKeyQueryParam = {
-      param: {
-        in: 'query',
-        name: securityDef['APIKeyHeader'].name,
-        value: '{{' + securityDef['APIKeyHeader'].name + '}}'
-      }
-    };
-  }
-
-  if (securityDef.hasOwnProperty('Bearer')) {
-    security.Bearer = {
-      param: {
-        in: 'header',
-        name: securityDef['Bearer'].name,
-        value: '{{' + securityDef['Bearer'].name + '}}'                
-      }
-    };
-  }    
 
   return security;
 }

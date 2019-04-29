@@ -8,7 +8,7 @@ colors.setTheme({
   warn: 'yellow'
 });
 
-module.exports.definitionTestsPassed = (endpoint, globalSecurity) => {
+module.exports.definitionTestsPassed = (endpoint, security) => {
   if (isNotImplemented(endpoint.def.responses)) return true;
 
   let testPassed = true;
@@ -49,18 +49,17 @@ module.exports.definitionTestsPassed = (endpoint, globalSecurity) => {
 
   const consumes = endpoint.swaggerCommons.consumes || endpoint.def.consumes;
   const produces = endpoint.swaggerCommons.produces || endpoint.def.produces;
-  if (endpoint.method === 'get' && consumes === undefined) {
-    testPassed = false;
-    writeMessage(testPassed, 'Missing consumes (accept) definition.');
+  if (endpoint.method === 'get') {
+    testPassed = writeMessage(consumes !== undefined, 'Should be contain consumes (accept) definition.') && testPassed;
   } else if (produces === undefined) {
     resp = ['200', '202', '206'];
     testPassed = accept(endpoint.def.responses, resp, 
-      'Missing produces (content-type) definition.') && testPassed;
+      'Should be contain produces (content-type) definition.') && testPassed;
   }
 
-  if (globalSecurity) {
+  if (security) {
     testPassed = accept(endpoint.def.responses, ['401'], 
-      'Enpoint security required: Should be contain (401) response.') && testPassed;
+      'Should be contain (401) response.') && testPassed;
   }
 
   if (endpoint.def.parameters && 
@@ -93,18 +92,24 @@ function accept (responses, accept, message) {
     return accept.indexOf(prop) > -1;
   });
 
-  writeMessage(ok, message);
-  return ok;
+  return writeMessage(ok, message);
 }
 
 function isLowerCase (str, message) {
   const ok = str === str.toLowerCase() && str !== str.toUpperCase();
 
-  writeMessage(ok, message);
-  return ok;
+  return writeMessage(ok, message);
 }
 
+/**
+ * Write fail or OK test message
+ *
+ * @param {boolean} result
+ * @param {string} message
+ * @returns {boolean}
+ */
 function writeMessage (result, message) {
   // @ts-ignore
   process.stdout.write((result ? colors.info('√ ') : colors.error('† ')) + message + '\n');
+  return result;
 }
