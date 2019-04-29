@@ -104,13 +104,6 @@ function isLowerCase (str, message) {
   return ok;
 }
 
-function contentType (content, message) {
-  const ok = content !== undefined;
-
-  writeMessage(ok, message);
-  return ok;
-}
-
 function writeMessage (result, message) {
   // @ts-ignore
   process.stdout.write((result ? colors.info('√ ') : colors.error('† ')) + message + '\n');

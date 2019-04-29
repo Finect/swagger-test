@@ -99,8 +99,7 @@ class Endpoints {
     });
 
     if (!definitionTestsPassed) {
-      process.stdout.write('\nTests definition fails. Process aborted.\n');
-      process.exit(100);
+      throw new Error('Tests definition fails.');
     }
 
     this.globalVariables.forEach(variable => {
