@@ -47,6 +47,17 @@ module.exports.definitionTestsPassed = (endpoint, globalSecurity) => {
       'Should be contain success (' + resp.join() + ') response.') && testPassed;
   }
 
+  const consumes = endpoint.swaggerCommons.consumes || endpoint.def.consumes;
+  const produces = endpoint.swaggerCommons.produces || endpoint.def.produces;
+  if (endpoint.method === 'get' && consumes === undefined) {
+    testPassed = false;
+    writeMessage(testPassed, 'Missing consumes (accept) definition.');
+  } else if (produces === undefined) {
+    resp = ['200', '202', '206'];
+    testPassed = accept(endpoint.def.responses, resp, 
+      'Missing produces (content-type) definition.') && testPassed;
+  }
+
   if (globalSecurity) {
     testPassed = accept(endpoint.def.responses, ['401'], 
       'Enpoint security required: Should be contain (401) response.') && testPassed;
@@ -88,6 +99,13 @@ function accept (responses, accept, message) {
 
 function isLowerCase (str, message) {
   const ok = str === str.toLowerCase() && str !== str.toUpperCase();
+
+  writeMessage(ok, message);
+  return ok;
+}
+
+function contentType (content, message) {
+  const ok = content !== undefined;
 
   writeMessage(ok, message);
   return ok;

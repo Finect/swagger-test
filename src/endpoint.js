@@ -38,58 +38,57 @@ class Endpoint {
 }
 
 function buildPostmanItems (endpoint) {
-  const produces = endpoint.def.produces || endpoint.swaggerCommons.produces;
-  const consumes = endpoint.def.consumes || endpoint.swaggerCommons.consumes;
-
   /** @todo Only support application/json */ 
-  consumes.forEach(content => {
-    produces.forEach(accept => {
-      Object.keys(endpoint.def.responses).forEach(status => {
-        const response = endpoint.def.responses[status];
+  const content = (endpoint.def.produces && endpoint.def.produces[0]) || 
+    (endpoint.swaggerCommons.produces && endpoint.swaggerCommons.produces[0]) || undefined;
 
-        let tests = response['x-pm-test'] || [];
-        if (tests.length === 0 && status !== 'default') tests = buildDefaultsTest(endpoint, status);
+  const accept = (endpoint.def.consumes && endpoint.def.consumes[0]) || 
+    (endpoint.swaggerCommons.consumes && endpoint.swaggerCommons.consumes[0]) || undefined;
 
-        const globalParameters = endpoint.globalTests.parameters.filter(p => {
-          const responses = (p.except && p.except.responses) || [];
-          const methods = (p.except && p.methods) || [];
+  Object.keys(endpoint.def.responses).forEach(status => {
+    const response = endpoint.def.responses[status];
 
-          return !responses.map(String).includes(status) && !methods.includes(endpoint.method); 
-        });
+    let tests = response['x-pm-test'] || [];
+    if (tests.length === 0 && status !== 'default') tests = buildDefaultsTest(endpoint, status);
 
-        const globalTests = getGlobalsTest(endpoint, status);             
-        tests.forEach(test => {
-          test.params = test.params || [];
+    const globalParameters = endpoint.globalTests.parameters.filter(p => {
+      const responses = (p.except && p.except.responses) || [];
+      const methods = (p.except && p.methods) || [];
 
-          // add globals parameters if not exist in test
-          test.params = (globalParameters || []).filter(dp => dp.in !== 'body').reduce((acc, p) => {
-            if (!acc.find(pl => pl.name === p.name && pl.in === p.in)) acc.push(p);
-            return acc;
-          }, test.params);
+      return !responses.map(String).includes(status) && !methods.includes(endpoint.method); 
+    });
 
-          //add all parameters in defenition if not exist in test
-          test.params = (endpoint.def.parameters || []).filter(dp => dp.in !== 'body').reduce((acc, p) => {
-            if (!acc.find(pl => p.name === pl.name && p.in === pl.in)) {
-              acc.push({
-                name: p.name,
-                in: p.in,
-                value: p['x-pm-test-value'] || p.default || p.minimum || defaultVal(p),
-                disabled: true
-              });
-            }
-            
-            return acc;
-          }, test.params);
+    const globalTests = getGlobalsTest(endpoint, status);             
+    tests.forEach(test => {
+      test.params = test.params || [];
 
-          test.raw = (test.raw || '') + globalTests;
+      // add globals parameters if not exist in test
+      test.params = (globalParameters || []).filter(dp => dp.in !== 'body').reduce((acc, p) => {
+        if (!acc.find(pl => pl.name === p.name && pl.in === p.in)) acc.push(p);
+        return acc;
+      }, test.params);
 
-          if (status !== '401' && endpoint.security && 
-            !test.params.find(p => endpoint.security.param.name === p.name && 
-              endpoint.security.param.in === p.in)) test.params.push(endpoint.security.param);
+      //add all parameters in defenition if not exist in test
+      test.params = (endpoint.def.parameters || []).filter(dp => dp.in !== 'body').reduce((acc, p) => {
+        if (!acc.find(pl => p.name === pl.name && p.in === pl.in)) {
+          acc.push({
+            name: p.name,
+            in: p.in,
+            value: p['x-pm-test-value'] || p.default || p.minimum || defaultVal(p),
+            disabled: true
+          });
+        }
+        
+        return acc;
+      }, test.params);
 
-          endpoint.postmanItems.push(buildPostmanItem(endpoint.method, endpoint.url, test, content, accept, status));
-        });
-      });
+      test.raw = (test.raw || '') + globalTests;
+
+      if (status !== '401' && endpoint.security && 
+        !test.params.find(p => endpoint.security.param.name === p.name && 
+          endpoint.security.param.in === p.in)) test.params.push(endpoint.security.param);
+
+      endpoint.postmanItems.push(buildPostmanItem(endpoint.method, endpoint.url, test, content, accept, status));
     });
   });
 }

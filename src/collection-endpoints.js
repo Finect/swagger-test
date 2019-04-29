@@ -5,6 +5,7 @@ const deinitionTests = require('./definition-test');
 
 const request = require('request-promise-native');
 const ps = require('postman-collection');
+const Variable = require('postman-collection/lib').Variable;
 
 class Endpoints {
   /**
@@ -84,7 +85,7 @@ class Endpoints {
       let members = endpoint.export(this.swagger['x-pm-test'], security);     
       let folder;   
       if (endpoint.def.tags && endpoint.def.tags.length > 0) {
-        folder = collection.items.members.find(member => member.name === endpoint.def.tags[0]);
+        folder = collection.items.find(member => member.name === endpoint.def.tags[0], null);
         if (folder) folder.item = folder.item.concat(members);
         else members = { name: endpoint.def.tags[0], item: members };
       }
@@ -104,26 +105,31 @@ class Endpoints {
 
     this.globalVariables.forEach(variable => {
       if (variable.name === 'base-url') {
-        collection.variables.add({ 
+        collection.variables.add(new Variable({ 
           key: 'base-url', 
           id: 'base-url', 
           value: variable.value + this.swagger.basePath, 
           type: 'string' 
-        });
+        }));
         
         return;
       }
       
-      collection.variables.add({ key: variable.name, id: variable.name, value: variable.value, type: 'string' });
+      collection.variables.add(new Variable({ 
+        key: variable.name, 
+        id: variable.name, 
+        value: variable.value, 
+        type: 'string' 
+      }));
     });
 
     if (this.globalVariables.some(variable => variable.name === 'base-url')) {
-      collection.variables.add({ 
+      collection.variables.add(new Variable({ 
         key: 'base-url', 
         id: 'base-url', 
         value: this.swagger.schemes[0] + '://' + this.swagger.host + this.swagger.basePath, 
         type: 'string' 
-      });
+      }));
     } 
 
     return collection;
