@@ -46,8 +46,12 @@ paths:
         schema:
           $ref: "#/definitions/Pet"
       responses:
-        405:
-          description: "Invalid input"
+        201:
+          description: New pet created
+        400:
+          description: Invalid input
+        401:
+          description: Unauthorized
       security:
       - petstore_auth:
         - "write:pets"
@@ -70,12 +74,14 @@ paths:
         schema:
           $ref: "#/definitions/Pet"
       responses:
+        200:
+          description: Pet updated
         400:
-          description: "Invalid ID supplied"
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
         404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
+          description: Pet not found
       security:
       - petstore_auth:
         - "write:pets"
@@ -87,7 +93,7 @@ paths:
       summary: "Finds Pets by status"
       description: "Multiple status values can be provided with comma separated strings"
       operationId: "findPetsByStatus"
-      produces:
+      consumes:
       - "application/json"
       parameters:
       - name: "status"
@@ -112,6 +118,11 @@ paths:
               $ref: "#/definitions/Pet"
         400:
           description: "Invalid status value"
+        401:
+          description: Unauthorized
+        404:
+          description: Pet not found
+
       security:
       - petstore_auth:
         - "write:pets"
@@ -123,6 +134,8 @@ paths:
       summary: "Finds Pets by tags"
       description: "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing."
       operationId: "findPetsByTags"
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
@@ -143,6 +156,11 @@ paths:
               $ref: "#/definitions/Pet"
         400:
           description: "Invalid tag value"
+        401:
+          description: Unauthorized
+        404:
+          description: Pet not found
+
       security:
       - petstore_auth:
         - "write:pets"
@@ -203,7 +221,7 @@ paths:
         required: false
         type: "string"
       responses:
-        405:
+        501:
           description: "Invalid input"
       security:
       - petstore_auth:

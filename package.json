@@ -1,6 +1,6 @@
 {
   "name": "swagger2pm-test",
-  "version": "1.1.0",
+  "version": "1.1.0-beta.0",
   "description": "Create Postman collection with test from swagger",
   "preferGlobal": true,
   "bin": "swagger2pm-test.js",
