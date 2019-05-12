@@ -16,12 +16,49 @@ describe('Swagger definition to Postman test', () => {
     });
   });
 
-  it('I can run all integration test', done => {
-    swaggerTests('./test/petstore-swagger.yaml', {
-      run: `./test/data.json`,
-      save: true
-    }).then(() => done())
-      .catch(error => done(error));       
+  it('Fail GET whitout correct response 200', done => {
+    swaggerTests(`${__dirname}/swaggers/GET-whitout-response-200-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError') { done(); return; }
+        done(error);
+      });
+  });
+
+  it('Fail GET whitout consumes', done => {
+    swaggerTests(`${__dirname}/swaggers/GET-whitout-consumes-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError') { done(); return; }
+        done(error);
+      });
+  });
+
+  it('Fail GET security whitout response 401', done => {
+    swaggerTests(`${__dirname}/swaggers/GET-whitout-response-401-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError') { done(); return; }
+        done(error);
+      });
+  });
+
+  it('Warning on parameter required', done => {
+    swaggerTests(`${__dirname}/swaggers/GET-ok-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError') { done(); return; }
+        done(error);
+      });
+  });
+
+  it('GET all ok', done => {
+    swaggerTests(`${__dirname}/swaggers/GET-ok-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError') { done(); return; }
+        done(error);
+      });
   });
 
   after(done => {

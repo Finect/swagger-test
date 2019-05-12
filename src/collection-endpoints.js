@@ -1,11 +1,12 @@
 'use strict';
 
-const Endpoint = require('./endpoint');
-const deinitionTests = require('./definition-test');
-
 const request = require('request-promise-native');
 const ps = require('postman-collection');
 const Variable = require('postman-collection/lib').Variable;
+
+const Endpoint = require('./endpoint');
+const deinitionTests = require('./definition-test');
+const DefinitionError = require('./DefinitionError').DefinitionError;
 
 class Endpoints {
   /**
@@ -55,7 +56,7 @@ class Endpoints {
 
     if (this.swagger.securityDefinitions) {
       const securityValues = this.globalVariables.filter(obj => {
-        return obj.name === 'client_id' || obj.name === 'client_secret' || 
+        return obj.name === 'client_id' || obj.name === 'client_secret' ||
           obj.name === 'username' || obj.name === 'password';
       }) || [];
 
@@ -76,19 +77,19 @@ class Endpoints {
     }
 
     let definitionTestsPassed = true;
-    this.endpoints.forEach(endpoint => { 
+    this.endpoints.forEach(endpoint => {
       if (this.swagger.securityDefinitions && endpoint.def.security) {
         const key = Object.keys(endpoint.def.security[0])[0];
         security = securities[key];
 
-        if (security && security.variable && 
+        if (security && security.variable &&
           !this.globalVariables.some(variable => variable.name === security.variable.name)) {
           this.globalVariables.push(security.variable);
         }
       }
 
-      let members = endpoint.export(this.swagger['x-pm-test'], security);     
-      let folder;   
+      let members = endpoint.export(this.swagger['x-pm-test'], security);
+      let folder;
       if (endpoint.def.tags && endpoint.def.tags.length > 0) {
         folder = collection.items.find(member => member.name === endpoint.def.tags[0], null);
         if (folder) folder.item = folder.item.concat(members);
@@ -104,37 +105,37 @@ class Endpoints {
     });
 
     if (!definitionTestsPassed) {
-      throw new Error('Tests definition fails.');
+      throw new DefinitionError('Tests definition fails.');
     }
 
     this.globalVariables.forEach(variable => {
       if (variable.name === 'base-url') {
-        collection.variables.add(new Variable({ 
-          key: 'base-url', 
-          id: 'base-url', 
-          value: variable.value + this.swagger.basePath, 
-          type: 'string' 
+        collection.variables.add(new Variable({
+          key: 'base-url',
+          id: 'base-url',
+          value: variable.value + this.swagger.basePath,
+          type: 'string'
         }));
-        
+
         return;
       }
-      
-      collection.variables.add(new Variable({ 
-        key: variable.name, 
-        id: variable.name, 
-        value: variable.value, 
-        type: 'string' 
+
+      collection.variables.add(new Variable({
+        key: variable.name,
+        id: variable.name,
+        value: variable.value,
+        type: 'string'
       }));
     });
 
     if (this.globalVariables.some(variable => variable.name === 'base-url')) {
-      collection.variables.add(new Variable({ 
-        key: 'base-url', 
-        id: 'base-url', 
-        value: this.swagger.schemes[0] + '://' + this.swagger.host + this.swagger.basePath, 
-        type: 'string' 
+      collection.variables.add(new Variable({
+        key: 'base-url',
+        id: 'base-url',
+        value: this.swagger.schemes[0] + '://' + this.swagger.host + this.swagger.basePath,
+        type: 'string'
       }));
-    } 
+    }
 
     return collection;
   }
@@ -143,11 +144,11 @@ class Endpoints {
 async function getSecurities (securityDef, tokenUrl) {
   const security = {};
 
-  // only support password flow 
+  // only support password flow
   const oauth2 = securityDef.securities.find(security => security.type === 'oauth2');
   if (oauth2) {
     switch (oauth2.flow) {
-    case 'password': 
+    case 'password':
       const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
 
       const authRequest = {
@@ -163,7 +164,7 @@ async function getSecurities (securityDef, tokenUrl) {
           password: securityDef.value.password
         }
       };
-        
+
       try {
         const response = await request.post(authRequest);
         const result = JSON.parse(response);
@@ -175,11 +176,11 @@ async function getSecurities (securityDef, tokenUrl) {
           },
           variable: {
             name: oauth2.name,
-            value: result.token_type + ' ' + result.access_token 
+            value: result.token_type + ' ' + result.access_token
           }
-        };    
-      } catch (error) { 
-        process.stdout.write(error); 
+        };
+      } catch (error) {
+        process.stdout.write(error);
       }
 
       break;
@@ -194,7 +195,7 @@ async function getSecurities (securityDef, tokenUrl) {
           name: oauth2.name,
           value: 'unsupported'
         }
-      };  
+      };
     }
   }
 
@@ -210,7 +211,7 @@ async function getSecurities (securityDef, tokenUrl) {
       },
       variable: {
         name: basic.name,
-        value: 'Basic ' + b.toString('base64') 
+        value: 'Basic ' + b.toString('base64')
       }
     };
   }
@@ -221,7 +222,7 @@ async function getSecurities (securityDef, tokenUrl) {
       param: {
         in: apiKey.in,
         name: apiKey.name,
-        value: `{{${apiKey.name}}}`                
+        value: `{{${apiKey.name}}}`
       }
     };
   }
