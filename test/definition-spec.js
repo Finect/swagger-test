@@ -20,7 +20,9 @@ describe('Swagger definition to Postman test', () => {
     swaggerTests(`${__dirname}/swaggers/GET-whitout-response-200-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
-        if (error.name === 'DefinitionError') { done(); return; }
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 5001)) { done(); return; }
+
         done(error);
       });
   });
@@ -29,7 +31,8 @@ describe('Swagger definition to Postman test', () => {
     swaggerTests(`${__dirname}/swaggers/GET-whitout-consumes-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
-        if (error.name === 'DefinitionError') { done(); return; }
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 8001)) { done(); return; }
         done(error);
       });
   });
@@ -38,27 +41,55 @@ describe('Swagger definition to Postman test', () => {
     swaggerTests(`${__dirname}/swaggers/GET-whitout-response-401-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
-        if (error.name === 'DefinitionError') { done(); return; }
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 6001)) { done(); return; }
         done(error);
       });
+  });
+
+  it('Fail enum parameter whitout response 400', done => {
+    swaggerTests(`${__dirname}/swaggers/parameter-enum-response-400-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 7002)) { done(); return; }
+        done(error);
+      });
+  });
+
+  it('Fail parameter required whitout response 404', done => {
+    swaggerTests(`${__dirname}/swaggers/parameter-required-response-404-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 7001)) { done(); return; }
+        done(error);
+      });
+  });
+
+  it('Parameter required ignore 404', done => {
+    swaggerTests(`${__dirname}/swaggers/parameter-required-ignore-404-swagger.yaml`)
+      .then(() => done())
+      .catch(error => done(error));
   });
 
   it('Warning on parameter required', done => {
     swaggerTests(`${__dirname}/swaggers/GET-ok-swagger.yaml`)
-      .then(() => done(new Error('Test fail')))
-      .catch(error => {
-        if (error.name === 'DefinitionError') { done(); return; }
-        done(error);
-      });
+      .then(result => {
+        if (result.tests.definition.some(result => result.code === 4000)) {
+          done();
+          return;
+        };
+
+        done(new Error('Test fail'));
+      })
+      .catch(error => done(error));
   });
 
-  it('GET all ok', done => {
+  it('GET ok', done => {
     swaggerTests(`${__dirname}/swaggers/GET-ok-swagger.yaml`)
-      .then(() => done(new Error('Test fail')))
-      .catch(error => {
-        if (error.name === 'DefinitionError') { done(); return; }
-        done(error);
-      });
+      .then(() => done())
+      .catch(error => done(error));
   });
 
   after(done => {

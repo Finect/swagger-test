@@ -1,3 +1,5 @@
+/// <reference path="../index.d.ts"/>
+
 'use strict';
 
 const request = require('request-promise-native');
@@ -6,7 +8,7 @@ const Variable = require('postman-collection/lib').Variable;
 
 const Endpoint = require('./endpoint');
 const deinitionTests = require('./definition-test');
-const DefinitionError = require('./DefinitionError').DefinitionError;
+const DefinitionError = require('./errors').DefinitionError;
 
 class Endpoints {
   /**
@@ -40,12 +42,18 @@ class Endpoints {
   }
 
   async export (onExportEndpoint) {
-    const collection = new ps.Collection({
-      info: {
-        name: this.swagger.info.title,
-        version: this.swagger.info.version
+    const result = {
+      collection: new ps.Collection({
+        info: {
+          name: this.swagger.info.title,
+          version: this.swagger.info.version
+        }
+      }),
+      tests: {
+        definition: [],
+        collection: []
       }
-    });
+    };
 
     let securities;
     let security;
@@ -76,7 +84,8 @@ class Endpoints {
       }
     }
 
-    let definitionTestsPassed = true;
+    /** @type {Array<DefinitionErrorDetail>} */
+    let results = [];
     this.endpoints.forEach(endpoint => {
       if (this.swagger.securityDefinitions && endpoint.def.security) {
         const key = Object.keys(endpoint.def.security[0])[0];
@@ -91,26 +100,30 @@ class Endpoints {
       let members = endpoint.export(this.swagger['x-pm-test'], security);
       let folder;
       if (endpoint.def.tags && endpoint.def.tags.length > 0) {
-        folder = collection.items.find(member => member.name === endpoint.def.tags[0], null);
+        folder = result.collection.items.find(member => member.name === endpoint.def.tags[0], null);
+        // @ts-ignore
         if (folder) folder.item = folder.item.concat(members);
         else members = { name: endpoint.def.tags[0], item: members };
       }
 
-      if (!folder) collection.items.members = collection.items.members.concat(members);
+      // @ts-ignore
+      if (!folder) result.collection.items.members = result.collection.items.members.concat(members);
       onExportEndpoint(endpoint.method + ': ' + endpoint.url);
 
-      // Test definition
-      definitionTestsPassed = deinitionTests
-        .definitionTestsPassed(endpoint, this.swagger.security || endpoint.def.security) && definitionTestsPassed;
+      // Test definition results
+      results = results.concat(deinitionTests
+        .definitionTestsPassed(endpoint, this.swagger.security || endpoint.def.security));
     });
 
-    if (!definitionTestsPassed) {
-      throw new DefinitionError('Tests definition fails.');
+    if (results.length > 0 && results.some(result => result.code >= 5000)) {
+      throw new DefinitionError('Tests definition fails.', results);
     }
+
+    result.tests.definition = results;
 
     this.globalVariables.forEach(variable => {
       if (variable.name === 'base-url') {
-        collection.variables.add(new Variable({
+        result.collection.variables.add(new Variable({
           key: 'base-url',
           id: 'base-url',
           value: variable.value + this.swagger.basePath,
@@ -120,7 +133,7 @@ class Endpoints {
         return;
       }
 
-      collection.variables.add(new Variable({
+      result.collection.variables.add(new Variable({
         key: variable.name,
         id: variable.name,
         value: variable.value,
@@ -129,7 +142,7 @@ class Endpoints {
     });
 
     if (this.globalVariables.some(variable => variable.name === 'base-url')) {
-      collection.variables.add(new Variable({
+      result.collection.variables.add(new Variable({
         key: 'base-url',
         id: 'base-url',
         value: this.swagger.schemes[0] + '://' + this.swagger.host + this.swagger.basePath,
@@ -137,7 +150,7 @@ class Endpoints {
       }));
     }
 
-    return collection;
+    return result;
   }
 }
 

@@ -11,18 +11,20 @@ class TestResponse extends Result {
    * @param {string} message
    * @param {number} code
    *
-   * @returns {boolean}
+   * @returns {DefinitionErrorDetail}
    * @memberof TestResponse
    */
   accept (responses, accept, message, code) {
+    let result = null;
+
     const ok = Object.keys(responses).some(prop => {
       return accept.indexOf(prop) > -1;
     });
 
     if (ok) this.writeResult(message, 0);
-    else this.writeResult(message, code);
+    else result = this.writeResult(message, code);
 
-    return ok;
+    return result;
   }
 }
 

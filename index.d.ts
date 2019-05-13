@@ -1,2 +1,4 @@
-declare module 'swagger2pm-test' {
+interface DefinitionErrorDetail {
+  message: string,
+  code: number
 }

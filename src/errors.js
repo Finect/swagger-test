@@ -1,35 +1,24 @@
-'use strict';
+/// <reference path="../index.d.ts"/>
 
-class DefinitionErrorDetail {
-  /**
-   * @param {string} message
-   * @param {number} code
-   */
-  constructor (message, code) {
-    this.message = message;
-    this.code = code;
-  }
-}
+'use strict';
 
 class DefinitionError extends Error {
   /**
    * Creates an instance of DefinitionError.
    * @param {string} message
+   * @param {Array<DefinitionErrorDetail>} results
    * @memberof DefinitionError
    */
-  constructor (message) {
+  constructor (message, results) {
     super(message);
     this.name = 'DefinitionError';
 
     /** @type {Array<DefinitionErrorDetail>} */
-    this.errors = [];
-    /** @type {Array<DefinitionErrorDetail>} */
-    this.warnings = [];
+    this.results = results;
   }
 }
 
 module.exports.DefinitionError = DefinitionError;
-module.exports.DefinitionErrorDetail = DefinitionErrorDetail;
 
 class CollectionError extends Error {
   /**

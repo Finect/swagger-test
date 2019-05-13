@@ -7,7 +7,7 @@ const path = require('path');
 const newman = require('newman');
 const colors = require('colors');
 
-const CollectionError = require('./DefinitionError').CollectionError;
+const CollectionError = require('./errors').CollectionError;
 const Endpoints = require('./collection-endpoints');
 
 /**
@@ -56,20 +56,20 @@ module.exports = async (swagger, options = {}) => {
 
     process.stdout.write('\nTesting endpoints definition\n');
 
-    const collection = await endpoints.export(/** @param {string} url */url => {
+    const result = await endpoints.export(/** @param {string} url */url => {
       process.stdout.write('→ ' + url + '\n');
     });
 
     if (options.save) {
       const fileCollection = absSwaggerFile.substr(0, absSwaggerFile.lastIndexOf('.')) + '-postman.json';
-      fs.writeFileSync(fileCollection, JSON.stringify(collection, null, 2));
+      fs.writeFileSync(fileCollection, JSON.stringify(result.collection, null, 2));
 
       process.stdout.write('\nPostman collection exported to: ' + fileCollection + '\n');
     }
 
     if (options.run) {
       const newmanOptions = {
-        collection: collection,
+        collection: result.collection,
         reporters: 'cli'
       };
 
@@ -86,6 +86,8 @@ module.exports = async (swagger, options = {}) => {
         process.stdout.write('collection run complete!\n');
       });
     }
+
+    return result;
   } catch (err) {
     throw err;
   }

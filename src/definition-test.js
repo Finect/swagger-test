@@ -1,36 +1,37 @@
+/// <reference path="../index.d.ts"/>
+
 'use strict';
 
-const Plugins = require('./plugins-loader');
+const Plugins = require('./plugins/plugins-loader');
 const colors = require('colors/safe');
-const DefinitionErrorDetail = require('./DefinitionError').DefinitionErrorDetail;
 
+/**
+ * Execute all plugins definition tests
+ *
+ * @param {*} endpoint
+ * @param {*} security
+ * @returns {Array<DefinitionErrorDetail>}
+ */
 module.exports.definitionTestsPassed = (endpoint, security) => {
-  if (isNotImplemented(endpoint.def.responses)) return true;
+  let testResults = [];
+  if (isNotImplemented(endpoint.def.responses)) return testResults;
 
-  const plugins = new Plugins(`${__dirname}\\plugins`);
+  const plugins = new Plugins(`${__dirname}\\plugins\\definitions`);
   plugins.load();
 
   const consumes = endpoint.swaggerCommons.consumes || endpoint.def.consumes;
   const produces = endpoint.swaggerCommons.produces || endpoint.def.produces;
+  const method = endpoint.method.toLowerCase();
 
-  /** @type {Array<DefinitionErrorDetail>} */
-  const testPassed = [];
-  let resp;
+  testResults = testResults.concat(plugins.methods(endpoint.def, method));
+  testResults = testResults.concat(plugins.parameters(endpoint.def, endpoint.def.parameters));
 
-  plugins.methods(endpoint.def, endpoint.method.toLowerCase());
+  testResults = testResults.concat(plugins.consumes(endpoint.def, consumes, method));
+  testResults = testResults.concat(plugins.produces(endpoint.def, produces, method));
 
-  if (endpoint.method === 'get') {
-    testPassed = writeMessage(consumes !== undefined, 'Should be contain consumes (accept) definition.') && testPassed;
-  } else if (produces === undefined) {
-    resp = ['200', '202', '206'];
-    testPassed = accept(endpoint.def.responses, resp,
-      'Should be contain produces (content-type) definition.') && testPassed;
-  }
+  testResults = testResults.concat(plugins.securities(endpoint.def, security));
 
-  plugins.securities(endpoint.def, security);
-  plugins.parameters(endpoint.def, endpoint.def.parameters);
-
-  return testPassed;
+  return testResults;
 };
 
 function isNotImplemented (responses) {

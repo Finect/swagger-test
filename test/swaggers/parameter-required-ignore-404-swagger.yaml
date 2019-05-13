@@ -29,6 +29,7 @@ schemes:
 paths:
   /pet/findByStatus:
     get:
+      x-pm-test-ignore404: true
       tags:
       - "pet"
       summary: "Finds Pets by status"
@@ -36,6 +37,20 @@ paths:
       operationId: "findPetsByStatus"
       consumes:
       - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -43,6 +58,11 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Pet"
+        400:
+          description: "Invalid status value"
+        401:
+          description: Unauthorized
+
       security:
       - petstore_auth:
         - "write:pets"
