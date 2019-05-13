@@ -93,7 +93,7 @@ class TestResponses extends TestResponse {
    */
   __test (responses, accepted, code) {
     return this.accept(responses, accepted,
-      'Should be contain success (' + accepted.join() + ') response.', code);
+      'Should be contain (' + accepted.join() + ') response.', code);
   }
 }
 

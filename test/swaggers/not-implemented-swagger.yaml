@@ -51,80 +51,81 @@ paths:
           default: "available"
         collectionFormat: "multi"
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-        401:
-          description: Unauthorized
-        404:
-          description: Pet not found
-
+        501:
+          description: Not implemented
       security:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-  /pet/findByTags:
-    get:
+  /pet:
+    post:
       tags:
       - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
+      summary: "Add a new pet to the store"
+      description: ""
+      operationId: "addPet"
       consumes:
       - "application/json"
       produces:
       - "application/json"
       parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
+      - in: "body"
+        name: "body"
+        description: "Pet object that needs to be added to the store"
         required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
+        schema:
+          $ref: "#/definitions/Pet"
       responses:
-        202:
-          description: "Operation accepted"
-        400:
-          description: "Invalid tag value"
-        401:
-          description: Unauthorized
-        404:
-          description: Pet not found
-
+        501:
+          description: Not implemented
       security:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-      deprecated: true
-  /store/inventory:
-    get:
+    put:
       tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
+      - "pet"
+      summary: "Update an existing pet"
+      description: ""
+      operationId: "updatePet"
       consumes:
       - "application/json"
-      parameters: []
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Pet object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Pet"
       responses:
-        206:
-          description: "successful partial content"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-        401:
-          description: Unauthorized
+        501:
+          description: Not implemented
       security:
-      - api_key: []
+      - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+  /store/order/{orderId}:
+    delete:
+      tags:
+      - "store"
+      summary: "Delete purchase order by ID"
+      description: "For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors"
+      operationId: "deleteOrder"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "orderId"
+        in: "path"
+        description: "ID of the order that needs to be deleted"
+        required: true
+        type: "integer"
+        minimum: 1.0
+        format: "int64"
+      responses:
+        501:
+          description: Not implemented
 
 securityDefinitions:
   petstore_auth:

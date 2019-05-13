@@ -28,7 +28,7 @@ class TestParameters extends TestResponse {
 
     if (parameters.some(param => param.in === 'query' && param.required)) {
       result.push(this.writeResult(
-        'Parameters required in QUERY, maybe should be use \'in: path\' parameters', 4000));
+        'Parameters required in QUERY, maybe should be change to \'in: path\' definition.', 4000));
     }
 
     if (parameters.some(param => param.enum !== undefined ||

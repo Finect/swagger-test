@@ -16,8 +16,8 @@ describe('Swagger definition to Postman test', () => {
     });
   });
 
-  it('Fail GET whitout correct response 200', done => {
-    swaggerTests(`${__dirname}/swaggers/GET-whitout-response-200-swagger.yaml`)
+  it('Fail GET whitout correct response 2XX', done => {
+    swaggerTests(`${__dirname}/swaggers/GET-whitout-response-2XX-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
         if (error.name === 'DefinitionError' &&
@@ -73,10 +73,11 @@ describe('Swagger definition to Postman test', () => {
       .catch(error => done(error));
   });
 
-  it('Warning on parameter required', done => {
+  it('GET ok with warning on parameter required', done => {
     swaggerTests(`${__dirname}/swaggers/GET-ok-swagger.yaml`)
       .then(result => {
-        if (result.tests.definition.some(result => result.code === 4000)) {
+        if (result.tests.definition.some(result => result.code === 4000) &&
+          !result.tests.definition.some(result => result.code >= 5000)) {
           done();
           return;
         };
@@ -86,9 +87,110 @@ describe('Swagger definition to Postman test', () => {
       .catch(error => done(error));
   });
 
-  it('GET ok', done => {
-    swaggerTests(`${__dirname}/swaggers/GET-ok-swagger.yaml`)
+  it('Methods not implemented', done => {
+    swaggerTests(`${__dirname}/swaggers/not-implemented-swagger.yaml`)
       .then(() => done())
+      .catch(error => done(error));
+  });
+
+  it('Fail POST whitout correct response 2XX', done => {
+    swaggerTests(`${__dirname}/swaggers/POST-whitout-response-2XX-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 5003)) { done(); return; }
+
+        done(error);
+      });
+  });
+
+  it('Fail POST whitout correct response 400', done => {
+    swaggerTests(`${__dirname}/swaggers/POST-whitout-response-400-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 5002)) { done(); return; }
+
+        done(error);
+      });
+  });
+
+  it('POST ok', done => {
+    swaggerTests(`${__dirname}/swaggers/POST-ok-swagger.yaml`)
+      .then(result => done())
+      .catch(error => done(error));
+  });
+
+  it('Fail PUT whitout correct response 2XX', done => {
+    swaggerTests(`${__dirname}/swaggers/PUT-whitout-response-2XX-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 5005)) { done(); return; }
+
+        done(error);
+      });
+  });
+
+  it('Fail PUT whitout correct response 400', done => {
+    swaggerTests(`${__dirname}/swaggers/PUT-whitout-response-400-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 5004)) { done(); return; }
+
+        done(error);
+      });
+  });
+
+  it('PUT ok', done => {
+    swaggerTests(`${__dirname}/swaggers/PUT-ok-swagger.yaml`)
+      .then(result => done())
+      .catch(error => done(error));
+  });
+
+  it('Fail PATCH whitout correct response 2XX', done => {
+    swaggerTests(`${__dirname}/swaggers/PATCH-whitout-response-2XX-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 5007)) { done(); return; }
+
+        done(error);
+      });
+  });
+
+  it('Fail PATCH whitout correct response 400', done => {
+    swaggerTests(`${__dirname}/swaggers/PATCH-whitout-response-400-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 5006)) { done(); return; }
+
+        done(error);
+      });
+  });
+
+  it('PATCH ok', done => {
+    swaggerTests(`${__dirname}/swaggers/PATCH-ok-swagger.yaml`)
+      .then(result => done())
+      .catch(error => done(error));
+  });
+
+  it('Fail DELETE whitout correct response 2XX', done => {
+    swaggerTests(`${__dirname}/swaggers/DELETE-whitout-response-2XX-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 5008)) { done(); return; }
+
+        done(error);
+      });
+  });
+
+  it('DELETE ok', done => {
+    swaggerTests(`${__dirname}/swaggers/DELETE-ok-swagger.yaml`)
+      .then(result => done())
       .catch(error => done(error));
   });
 
