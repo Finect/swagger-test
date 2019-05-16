@@ -173,6 +173,8 @@ paths:
       summary: "Find pet by ID"
       description: "Returns a single pet"
       operationId: "getPetById"
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
@@ -189,6 +191,8 @@ paths:
             $ref: "#/definitions/Pet"
         400:
           description: "Invalid ID supplied"
+        401:
+          description: Unauthorized
         404:
           description: "Pet not found"
       security:
@@ -235,6 +239,8 @@ paths:
       operationId: "deletePet"
       produces:
       - "application/json"
+      consumes:
+      - "application/json"
       parameters:
       - name: "api_key"
         in: "header"
@@ -247,8 +253,12 @@ paths:
         type: "integer"
         format: "int64"
       responses:
+        204:
+          description: Pet deleted
         400:
           description: "Invalid ID supplied"
+        401:
+          description: Unauthorized
         404:
           description: "Pet not found"
       security:
@@ -288,6 +298,13 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/ApiResponse"
+        400:
+          description: "Invalid tag value"
+        401:
+          description: Unauthorized
+        404:
+          description: Pet not found
+
       security:
       - petstore_auth:
         - "write:pets"
@@ -301,6 +318,8 @@ paths:
       operationId: "getInventory"
       produces:
       - "application/json"
+      consumes:
+      - "application/json"
       parameters: []
       responses:
         200:
@@ -310,6 +329,9 @@ paths:
             additionalProperties:
               type: "integer"
               format: "int32"
+        401:
+          description: Unauthorized
+
       security:
       - api_key: []
   /store/order:
@@ -343,6 +365,8 @@ paths:
       description: "For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions"
       operationId: "getOrderById"
       produces:
+      - "application/json"
+      consumes:
       - "application/json"
       parameters:
       - name: "orderId"
@@ -379,6 +403,8 @@ paths:
         minimum: 1.0
         format: "int64"
       responses:
+        204:
+          description: "successful operation"
         400:
           description: "Invalid ID supplied"
         404:

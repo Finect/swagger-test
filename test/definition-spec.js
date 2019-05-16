@@ -16,7 +16,7 @@ describe('Swagger definition to Postman test', () => {
     });
   });
 
-  it('Fail GET whitout correct response 2XX', done => {
+  it('Fail on GET whitout correct response 2XX', done => {
     swaggerTests(`${__dirname}/swaggers/GET-whitout-response-2XX-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -27,7 +27,7 @@ describe('Swagger definition to Postman test', () => {
       });
   });
 
-  it('Fail GET whitout consumes', done => {
+  it('Fail on GET whitout consumes', done => {
     swaggerTests(`${__dirname}/swaggers/GET-whitout-consumes-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -37,7 +37,7 @@ describe('Swagger definition to Postman test', () => {
       });
   });
 
-  it('Fail GET security whitout response 401', done => {
+  it('Fail on GET security whitout response 401', done => {
     swaggerTests(`${__dirname}/swaggers/GET-whitout-response-401-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -47,7 +47,7 @@ describe('Swagger definition to Postman test', () => {
       });
   });
 
-  it('Fail enum parameter whitout response 400', done => {
+  it('Fail on enum parameter whitout response 400', done => {
     swaggerTests(`${__dirname}/swaggers/parameter-enum-response-400-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -57,7 +57,17 @@ describe('Swagger definition to Postman test', () => {
       });
   });
 
-  it('Fail parameter required whitout response 404', done => {
+  it('Fail on not string parameter whitout response 400', done => {
+    swaggerTests(`${__dirname}/swaggers/parameter-not-string-response-400-swagger.yaml`)
+      .then(() => done(new Error('Test fail')))
+      .catch(error => {
+        if (error.name === 'DefinitionError' &&
+        error.results.some(result => result.code === 7003)) { done(); return; }
+        done(error);
+      });
+  });
+
+  it('Fail on parameter required whitout response 404', done => {
     swaggerTests(`${__dirname}/swaggers/parameter-required-response-404-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -67,7 +77,7 @@ describe('Swagger definition to Postman test', () => {
       });
   });
 
-  it('Parameter required ignore 404', done => {
+  it('Ok on parameter required with ignore 404', done => {
     swaggerTests(`${__dirname}/swaggers/parameter-required-ignore-404-swagger.yaml`)
       .then(() => done())
       .catch(error => done(error));
@@ -93,7 +103,7 @@ describe('Swagger definition to Postman test', () => {
       .catch(error => done(error));
   });
 
-  it('Fail POST whitout correct response 2XX', done => {
+  it('Fail on POST whitout correct response 2XX', done => {
     swaggerTests(`${__dirname}/swaggers/POST-whitout-response-2XX-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -104,7 +114,7 @@ describe('Swagger definition to Postman test', () => {
       });
   });
 
-  it('Fail POST whitout correct response 400', done => {
+  it('Fail on POST whitout correct response 400', done => {
     swaggerTests(`${__dirname}/swaggers/POST-whitout-response-400-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -121,7 +131,7 @@ describe('Swagger definition to Postman test', () => {
       .catch(error => done(error));
   });
 
-  it('Fail PUT whitout correct response 2XX', done => {
+  it('Fail on PUT whitout correct response 2XX', done => {
     swaggerTests(`${__dirname}/swaggers/PUT-whitout-response-2XX-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -132,7 +142,7 @@ describe('Swagger definition to Postman test', () => {
       });
   });
 
-  it('Fail PUT whitout correct response 400', done => {
+  it('Fail on PUT whitout correct response 400', done => {
     swaggerTests(`${__dirname}/swaggers/PUT-whitout-response-400-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -149,7 +159,7 @@ describe('Swagger definition to Postman test', () => {
       .catch(error => done(error));
   });
 
-  it('Fail PATCH whitout correct response 2XX', done => {
+  it('Fail on PATCH whitout correct response 2XX', done => {
     swaggerTests(`${__dirname}/swaggers/PATCH-whitout-response-2XX-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -160,7 +170,7 @@ describe('Swagger definition to Postman test', () => {
       });
   });
 
-  it('Fail PATCH whitout correct response 400', done => {
+  it('Fail on PATCH whitout correct response 400', done => {
     swaggerTests(`${__dirname}/swaggers/PATCH-whitout-response-400-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -177,7 +187,7 @@ describe('Swagger definition to Postman test', () => {
       .catch(error => done(error));
   });
 
-  it('Fail DELETE whitout correct response 2XX', done => {
+  it('Fail on DELETE whitout correct response 2XX', done => {
     swaggerTests(`${__dirname}/swaggers/DELETE-whitout-response-2XX-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
       .catch(error => {
@@ -190,6 +200,12 @@ describe('Swagger definition to Postman test', () => {
 
   it('DELETE ok', done => {
     swaggerTests(`${__dirname}/swaggers/DELETE-ok-swagger.yaml`)
+      .then(result => done())
+      .catch(error => done(error));
+  });
+
+  it('Pet Store Ok', done => {
+    swaggerTests(`${__dirname}/petstore-swagger.yaml`)
       .then(result => done())
       .catch(error => done(error));
   });
