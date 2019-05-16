@@ -426,48 +426,13 @@ paths:
         schema:
           $ref: "#/definitions/User"
       responses:
-        default:
+        200:
           description: "successful operation"
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
+          schema:
             $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
+        400:
+          description: "Invalid user"
+
         default:
           description: "successful operation"
   /user/login:
@@ -478,6 +443,8 @@ paths:
       description: ""
       operationId: "loginUser"
       produces:
+      - "application/json"
+      consumes:
       - "application/json"
       parameters:
       - name: "username"
@@ -504,8 +471,9 @@ paths:
               type: "string"
               format: "date-time"
               description: "date in UTC when token expires"
-        400:
-          description: "Invalid username/password supplied"
+        404:
+          description: Pet not found
+
   /user/logout:
     get:
       tags:
@@ -515,8 +483,13 @@ paths:
       operationId: "logoutUser"
       produces:
       - "application/json"
+      consumes:
+      - "application/json"
       parameters: []
       responses:
+        200:
+          description: "successful operation"
+
         default:
           description: "successful operation"
   /user/{username}:
@@ -527,6 +500,8 @@ paths:
       description: ""
       operationId: "getUserByName"
       produces:
+      - "application/json"
+      consumes:
       - "application/json"
       parameters:
       - name: "username"
@@ -539,8 +514,6 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
         404:
           description: "User not found"
     put:
@@ -564,6 +537,8 @@ paths:
         schema:
           $ref: "#/definitions/User"
       responses:
+        200:
+          description: "successful operation"
         400:
           description: "Invalid user supplied"
         404:
@@ -583,6 +558,8 @@ paths:
         required: true
         type: "string"
       responses:
+        204:
+          description: "successful operation"
         400:
           description: "Invalid username supplied"
         404:

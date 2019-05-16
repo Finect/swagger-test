@@ -127,7 +127,7 @@ describe('Swagger definition to Postman test', () => {
 
   it('POST ok', done => {
     swaggerTests(`${__dirname}/swaggers/POST-ok-swagger.yaml`)
-      .then(result => done())
+      .then(() => done())
       .catch(error => done(error));
   });
 
@@ -155,7 +155,7 @@ describe('Swagger definition to Postman test', () => {
 
   it('PUT ok', done => {
     swaggerTests(`${__dirname}/swaggers/PUT-ok-swagger.yaml`)
-      .then(result => done())
+      .then(() => done())
       .catch(error => done(error));
   });
 
@@ -183,7 +183,7 @@ describe('Swagger definition to Postman test', () => {
 
   it('PATCH ok', done => {
     swaggerTests(`${__dirname}/swaggers/PATCH-ok-swagger.yaml`)
-      .then(result => done())
+      .then(() => done())
       .catch(error => done(error));
   });
 
@@ -200,13 +200,14 @@ describe('Swagger definition to Postman test', () => {
 
   it('DELETE ok', done => {
     swaggerTests(`${__dirname}/swaggers/DELETE-ok-swagger.yaml`)
-      .then(result => done())
+      .then(() => done())
       .catch(error => done(error));
   });
 
-  it('Pet Store Ok', done => {
-    swaggerTests(`${__dirname}/petstore-swagger.yaml`)
-      .then(result => done())
+  it('Pet Store run all', done => {
+    swaggerTests(`${__dirname}/petstore-swagger.yaml`, {
+      run: true
+    }).then(() => done())
       .catch(error => done(error));
   });
 
