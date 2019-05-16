@@ -1,21 +1,8 @@
 /*eslint node/no-unpublished-require:0*/
 
-const server = require('./server');
 const swaggerTests = require('../src/swagger');
 
 describe('Swagger definition to Postman test', () => {
-  before(done => {
-    //
-    done();
-  });
-
-  before(done => {
-    server.run(() => {
-      console.log('JSON Server is running');
-      done();
-    });
-  });
-
   it('Fail on GET whitout correct response 2XX', done => {
     swaggerTests(`${__dirname}/swaggers/GET-whitout-response-2XX-swagger.yaml`)
       .then(() => done(new Error('Test fail')))
@@ -202,18 +189,5 @@ describe('Swagger definition to Postman test', () => {
     swaggerTests(`${__dirname}/swaggers/DELETE-ok-swagger.yaml`)
       .then(() => done())
       .catch(error => done(error));
-  });
-
-  it('Pet Store run all', done => {
-    swaggerTests(`${__dirname}/petstore-swagger.yaml`, {
-      run: true
-    }).then(() => done())
-      .catch(error => done(error));
-  });
-
-  after(done => {
-    server.stop(() => {
-      done();
-    });
   });
 });
