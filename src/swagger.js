@@ -67,27 +67,32 @@ module.exports = async (swagger, options = {}) => {
       process.stdout.write('\nPostman collection exported to: ' + fileCollection + '\n');
     }
 
-    if (options.run) {
-      const newmanOptions = {
-        collection: result.collection,
-        reporters: 'cli'
-      };
+    if (!options.run) return result;
+    process.stdout.write('\nOption --run detected. Using newman to run collection.\n');
 
-      if (absDataFile) newmanOptions.iterationData = absDataFile;
+    const newmanOptions = {
+      collection: result.collection,
+      reporters: 'cli'
+    };
 
-      process.stdout.write('\nOption --run detected. Using newman to run collection.\n');
-      newman.run(newmanOptions, (err, summary) => {
-        if (err) { throw err; }
-        if (summary.run.failures.length > 0) {
-          process.stdout.write(summary.run.failures.length + ' assertions failed.\n');
-          throw new CollectionError(`${summary.run.failures.length} assertions failed.`);
-        }
+    if (absDataFile) newmanOptions.iterationData = absDataFile;
 
-        process.stdout.write('collection run complete!\n');
-      });
-    }
+    return new Promise((resolve, reject) => {
+      try {
+        newman.run(newmanOptions, (err, summary) => {
+          if (err) { throw err; }
+          if (summary.run.failures.length > 0) {
+            process.stdout.write(summary.run.failures.length + ' assertions failed.\n');
+            throw new CollectionError(`${summary.run.failures.length} assertions failed.`);
+          }
 
-    return result;
+          process.stdout.write('collection run complete!\n');
+          resolve(result);
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
   } catch (err) {
     throw err;
   }
