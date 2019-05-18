@@ -10,19 +10,12 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "localhost:3000"
-basePath: "/v2"
+basePath: "/"
 tags:
 - name: "pet"
   description: "Everything about your Pets"
   externalDocs:
     description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
     url: "http://swagger.io"
 schemes:
 - "http"
@@ -48,40 +41,31 @@ paths:
       responses:
         201:
           description: New pet created
+          x-pm-test:
+          - params:
+            - in: body
+              application/json: {
+                "id": 0,
+                "category": {
+                  "id": 0,
+                  "name": "string"
+                },
+                "name": "doggie",
+                "photoUrls": [
+                  "string"
+                ],
+                "tags": [
+                  {
+                    "id": 0,
+                    "name": "string"
+                  }
+                ],
+                "status": "available"
+              }
         400:
           description: Invalid input
         401:
           description: Unauthorized
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    put:
-      tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        200:
-          description: Pet updated
-        400:
-          description: Invalid ID supplied
-        401:
-          description: Unauthorized
-        404:
-          description: Pet not found
       security:
       - petstore_auth:
         - "write:pets"
@@ -116,56 +100,32 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Pet"
+          x-pm-test:
+           - params:
+              - name: status
+                in: query
+                value: '{{status}}'
         400:
           description: "Invalid status value"
+          x-pm-test:
+           - params:
+              - name: status
+                in: query
+                value: 'aaaaaa'
         401:
           description: Unauthorized
         404:
           description: Pet not found
+          x-pm-test:
+           - params:
+              - name: status
+                in: query
+                value: 'sold'
 
       security:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-        401:
-          description: Unauthorized
-        404:
-          description: Pet not found
-
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
   /pet/{petId}:
     get:
       tags:
@@ -189,44 +149,95 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/Pet"
+          x-pm-test:
+           - params:
+              - name: petId
+                in: path
+                value: 1
         400:
           description: "Invalid ID supplied"
+          x-pm-test:
+           - params:
+              - name: petId
+                in: path
+                value: 'aaaaaa'
+
         401:
           description: Unauthorized
         404:
           description: "Pet not found"
       security:
       - api_key: []
-    post:
+    put:
       tags:
       - "pet"
-      summary: "Updates a pet in the store with form data"
+      summary: "Update an existing pet"
       description: ""
-      operationId: "updatePetWithForm"
+      operationId: "updatePet"
       consumes:
-      - "application/x-www-form-urlencoded"
+      - "application/json"
       produces:
       - "application/json"
       parameters:
       - name: "petId"
         in: "path"
-        description: "ID of pet that needs to be updated"
+        description: "ID of pet to return"
         required: true
         type: "integer"
         format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Pet object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Pet"
       responses:
-        501:
-          description: "Invalid input"
+        200:
+          description: Pet updated
+          x-pm-test:
+          - params:
+            - name: petId
+              in: path
+              value: 1
+            - in: body
+              application/json: {
+                "name": "doggie",
+                "tags": [
+                  {
+                    "id": 0,
+                    "name": "string"
+                  }
+                ],
+                "status": "available"
+              }
+        400:
+          description: Invalid input
+          x-pm-test:
+           - params:
+              - name: petId
+                in: path
+                value: 'aaaaaa'
+        401:
+          description: Unauthorized
+        404:
+          description: "Pet not found"
+          x-pm-test:
+          - params:
+            - name: petId
+              in: path
+              value: 0
+            - in: body
+              application/json: {
+                "name": "doggie",
+                "tags": [
+                  {
+                    "id": 0,
+                    "name": "string"
+                  }
+                ],
+                "status": "available"
+              }
+
       security:
       - petstore_auth:
         - "write:pets"
@@ -255,8 +266,18 @@ paths:
       responses:
         204:
           description: Pet deleted
+          x-pm-test:
+          - params:
+            - name: petId
+              in: path
+              value: 1
         400:
           description: "Invalid ID supplied"
+          x-pm-test:
+           - params:
+              - name: petId
+                in: path
+                value: 'aaaaaa'
         401:
           description: Unauthorized
         404:
@@ -265,305 +286,6 @@ paths:
       - petstore_auth:
         - "write:pets"
         - "read:pets"
-  /pet/{petId}/uploadImage:
-    post:
-      tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-        400:
-          description: "Invalid tag value"
-        401:
-          description: Unauthorized
-        404:
-          description: Pet not found
-
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      consumes:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-        401:
-          description: Unauthorized
-
-      security:
-      - api_key: []
-  /store/order:
-    post:
-      tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
-        required: true
-        schema:
-          $ref: "#/definitions/Order"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
-    get:
-      tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      consumes:
-      - "application/json"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10.0
-        minimum: 1.0
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1.0
-        format: "int64"
-      responses:
-        204:
-          description: "successful operation"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /user:
-    post:
-      tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid user"
-
-        default:
-          description: "successful operation"
-  /user/login:
-    get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      consumes:
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "string"
-          headers:
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-        404:
-          description: Pet not found
-
-  /user/logout:
-    get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      consumes:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      consumes:
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        404:
-          description: "User not found"
-    put:
-      tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        200:
-          description: "successful operation"
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        204:
-          description: "successful operation"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
 securityDefinitions:
   petstore_auth:
     type: "oauth2"

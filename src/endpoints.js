@@ -21,7 +21,7 @@ class Endpoints {
   constructor (swagger, globalVariables, tokenUrl) {
     this.swagger = swagger;
     this.endpoints = [];
-    this.globalVariables = globalVariables || [];
+    this.globalVariables = globalVariables;
     this.tokenUrl = tokenUrl;
   }
 
@@ -141,7 +141,7 @@ class Endpoints {
       }));
     });
 
-    if (this.globalVariables.some(variable => variable.name === 'base-url')) {
+    if (!this.globalVariables.some(variable => variable.name === 'base-url')) {
       result.collection.variables.add(new Variable({
         key: 'base-url',
         id: 'base-url',

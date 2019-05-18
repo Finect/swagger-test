@@ -26,23 +26,23 @@ class Endpoint {
 
   export (globalTests, security) {
     this.globalTests = {
-      parameters: (globalTests && globalTests['params']) || [], 
-      tests: (globalTests && globalTests['tests']) || [] 
+      parameters: (globalTests && globalTests['params']) || [],
+      tests: (globalTests && globalTests['tests']) || []
     };
 
     this.security = security;
 
     buildPostmanItems(this);
-    return this.postmanItems; 
+    return this.postmanItems;
   }
 }
 
 function buildPostmanItems (endpoint) {
-  /** @todo Only support application/json */ 
-  const content = (endpoint.def.produces && endpoint.def.produces[0]) || 
+  /** @todo Only support application/json */
+  const content = (endpoint.def.produces && endpoint.def.produces[0]) ||
     (endpoint.swaggerCommons.produces && endpoint.swaggerCommons.produces[0]) || undefined;
 
-  const accept = (endpoint.def.consumes && endpoint.def.consumes[0]) || 
+  const accept = (endpoint.def.consumes && endpoint.def.consumes[0]) ||
     (endpoint.swaggerCommons.consumes && endpoint.swaggerCommons.consumes[0]) || undefined;
 
   Object.keys(endpoint.def.responses).forEach(status => {
@@ -55,10 +55,10 @@ function buildPostmanItems (endpoint) {
       const responses = (p.except && p.except.responses) || [];
       const methods = (p.except && p.methods) || [];
 
-      return !responses.map(String).includes(status) && !methods.includes(endpoint.method); 
+      return !responses.map(String).includes(status) && !methods.includes(endpoint.method);
     });
 
-    const globalTests = getGlobalsTest(endpoint, status);             
+    const globalTests = getGlobalsTest(endpoint, status);
     tests.forEach(test => {
       test.params = test.params || [];
 
@@ -78,14 +78,14 @@ function buildPostmanItems (endpoint) {
             disabled: true
           });
         }
-        
+
         return acc;
       }, test.params);
 
       test.raw = (test.raw || '') + globalTests;
 
-      if (status !== '401' && endpoint.security && 
-        !test.params.find(p => endpoint.security.param.name === p.name && 
+      if (status !== '401' && endpoint.security &&
+        !test.params.find(p => endpoint.security.param.name === p.name &&
           endpoint.security.param.in === p.in)) test.params.push(endpoint.security.param);
 
       endpoint.postmanItems.push(buildPostmanItem(endpoint.method, endpoint.url, test, content, accept, status));
@@ -135,7 +135,7 @@ function buildPostmanItem (method, path, test, content, accept, status) {
   const bodyParam = test.params.find(param => param.in === 'body');
 
   pathParameters.forEach(param => {
-    urlVariables.push({ key: param.name, value: param.value });
+    urlVariables.push({ key: param.name, value: param.value.toString() });
     url = url.replace(`{${param.name}}`, `:${param.name}`);
   });
 
@@ -143,13 +143,7 @@ function buildPostmanItem (method, path, test, content, accept, status) {
     name: (test.description || `[${status}] on ${url}`).replace('[url]', url),
     request: {
       method: method,
-      url: {
-        // @ts-ignore
-        raw: '{{base-url}}' + url,
-        host: [ '{{base-url}}' ],
-        path: url.split('/'),
-        query: []
-      },
+      url: `{{base-url}}${url.substring(1)}`,
       // @ts-ignore
       header: [
         { key: 'accept', value: accept },
@@ -161,20 +155,20 @@ function buildPostmanItem (method, path, test, content, accept, status) {
   test.params.filter(param => param.in === 'query')
     .map(param => {
       item.request.url.query.members.push({
-        key: param.name, 
-        value: param.value.toString(), 
-        disabled: param.disabled 
+        key: param.name,
+        value: param.value.toString(),
+        disabled: param.disabled
       });
     });
 
   if (headerParam.length > 0) {
     headerParam.forEach(header => {
       item.request.headers.members.push({
-        key: header.name, 
-        value: header.value, 
+        key: header.name,
+        value: header.value,
         disabled: header.disabled
       });
-    });  
+    });
   }
 
   if (urlVariables.length > 0) item.request.url.variable = urlVariables;
@@ -184,12 +178,12 @@ function buildPostmanItem (method, path, test, content, accept, status) {
 
     formParameters.forEach(form => {
       item.request.body.formdata.push({
-        key: form.name, 
-        value: form.type !== 'file' ? form.value : undefined,
-        src: form.type === 'file' ? form.value : undefined, 
+        key: form.name,
+        value: form.type !== 'file' ? form.value.toString() : undefined,
+        src: form.type === 'file' ? form.value : undefined,
         type: form.type
       });
-    });  
+    });
   }
 
   if (bodyParam) {
@@ -198,7 +192,7 @@ function buildPostmanItem (method, path, test, content, accept, status) {
     if (content.endsWith('xml')) item.request.body.raw = vkbeautify.xml(bodyParam[content]);
     else if (content.endsWith('json')) item.request.body.raw = vkbeautify.json(bodyParam[content]);
     else item.request.body.raw = bodyParam[content];
-  }   
+  }
 
   item.events.add(Events.getTests(accept, status, test.raw));
 
@@ -208,17 +202,17 @@ function buildPostmanItem (method, path, test, content, accept, status) {
 function defaultVal (parameter) {
   if (parameter.in === 'body') return { 'application/json:': jsf.generate(parameter.schema) };
 
-  const type = parameter.items ? parameter.items.type : parameter.type;    
+  const type = parameter.items ? parameter.items.type : parameter.type;
   if (typeof type !== 'string') throw new TypeError('Type must be a string.');
 
   // Handle simple types (primitives and plain function/object)
   switch (type) {
   case 'boolean': return 'false';
-  case 'integer': 
+  case 'integer':
   case 'number': return '0';
   case 'string': {
     // TODO: check format (date, date-time, enums, etc.)
-    return 'string'; 
+    return 'string';
   }
   default : return '';
   }

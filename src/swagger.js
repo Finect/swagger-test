@@ -8,7 +8,7 @@ const newman = require('newman');
 const colors = require('colors');
 
 const CollectionError = require('./errors').CollectionError;
-const Endpoints = require('./collection-endpoints');
+const Endpoints = require('./endpoints');
 
 /**
  * @param {string} swagger Path to swagger file
@@ -22,6 +22,7 @@ const Endpoints = require('./collection-endpoints');
 module.exports = async (swagger, options = {}) => {
   const absSwaggerFile = path.resolve(swagger);
   const absDataFile = options.run && typeof options.run === 'string' ? path.resolve(options.run) : null;
+  options.global = options.global || [];
 
   if (absDataFile) {
     const globalData = require(absDataFile);
@@ -30,14 +31,12 @@ module.exports = async (swagger, options = {}) => {
     process.stdout.write(`\nUsing external data file: ${absDataFile}\n`);
     process.stdout.write('──────────────────────────────────────────────────────');
 
-    globalData.forEach(data => {
-      Object.keys(data).forEach(key => {
-        options.global.push({ name: key, value: data[key] });
-        if (key.length > maxLength) maxLength = key.length;
-      });
+    Object.keys(globalData).forEach(key => {
+      options.global.push({ name: key, value: globalData[key] });
+      if (key.length > maxLength) maxLength = key.length;
     });
 
-    (options.global || []).forEach(option => {
+    (options.global).forEach(option => {
       process.stdout.write(`\n${colors.green(option.name.padStart(maxLength))}: ${option.value}`);
     });
 
@@ -68,8 +67,8 @@ module.exports = async (swagger, options = {}) => {
     }
 
     if (!options.run) return result;
-    process.stdout.write('\nOption --run detected. Using newman to run collection.\n');
 
+    process.stdout.write('\nOption --run detected. Using newman to run collection.\n');
     const newmanOptions = {
       collection: result.collection,
       reporters: 'cli'

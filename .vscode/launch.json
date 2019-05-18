@@ -13,9 +13,7 @@
         "--timeout",
         "0",
         "test/*-spec.js"
-      ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"    
+      ]
     }
   ]
 }
