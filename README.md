@@ -85,14 +85,14 @@ Para el tipo **body** se puede especificar un raw del contenido que se desea env
 
 Por defecto, la herramienta incluye los siguientes test:
 
-1- Que el content-type devuelto en el response, se corresponda con el `consunes` definido.
-2- Que el http status code devuelto en el response, se corresponda con el http status code definido en el `responses`.
+1. Que el content-type devuelto en el response, se corresponda con el `consunes` definido.
+2. Que el http status code devuelto en el response, se corresponda con el http status code definido en el `responses`.
 
 Adicionalmente, existen test definidos que pueden ser incluidos como plugins en la definición.
 
-1- isArray: Permite comprobar que una determinada propiedad del response, es un array
-2- isObject: Permite comprobar que una determinada propiedad del response, es un Object
-2- valueCheck: Permite comprobar el valor de una determinada propiedad del response.
+1. isArray: Permite comprobar que una determinada propiedad del response, es un array
+2. isObject: Permite comprobar que una determinada propiedad del response, es un Object
+3. valueCheck: Permite comprobar el valor de una determinada propiedad del response.
 
 ```
 200:
@@ -117,6 +117,16 @@ Adicionalmente, existen test definidos que pueden ser incluidos como plugins en 
 ```
 
 ## Testing 
-> $ npm install swagger2pm-test -g
-> $ swagger2pm-test
+```
+$ npm install swagger2pm-test -g 
+$ swagger2pm-test
+```
+
+
+TODO:
+1. Refactoring
+2. Clean code
+3. Use external plugins
+4. Better documentation
+
 
