@@ -14,10 +14,10 @@ program
     try {
       option.split(',').forEach(e => {
         var global = e.trim().split('=');
-        options.push({ name: global[0].trim(), value: global[1].trim() });            
+        options.push({ name: global[0].trim(), value: global[1].trim() });
       });
     } catch (err) {
-      process.stdout.write('Invalid global variables option. Use var1=value1,var2=value2\n'); 
+      process.stdout.write('Invalid global variables option. Use var1=value1,var2=value2\n');
       throw err;
     }
 
@@ -28,9 +28,9 @@ program
   .option('-t, --tokenUrl [tokenUrl]', 'Override token url in swagger.')
   .description('Create Postman collection with test from swagger')
   .action((req, options) => {
-    swagger(req, options).catch(err => { 
-      process.stdout.write('Ohnoes! :-( ' + err.stack || err.message + '\n');
-      throw err; 
+    swagger(req, options).catch(err => {
+      process.stdout.write('Oh-noes! :-( ' + err.stack || err.message + '\n');
+      throw err;
     });
   });
 

@@ -11,10 +11,11 @@ describe('Swagger definition to Postman test', () => {
     });
   });
 
-  it('Pet Store run all', async () => {
+  it.only('Pet Store run all', async () => {
     try {
       const results = await swaggerTests(`${__dirname}/swaggers/petstore-swagger.yaml`, {
-        run: `${__dirname}/data.json`
+        run: `${__dirname}/data.json`,
+        save: true
       });
 
       console.assert(!results.tests.definition.some(result => result.code >= 5000), 'Errors in test.');

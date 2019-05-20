@@ -62,6 +62,14 @@ paths:
                 ],
                 "status": "available"
               }
+            plugins:
+              - name: valueCheck
+                params:
+                  item: 'code'
+                  value: 201
+              - name: isObject
+                params:
+                  item: 'data'
         400:
           description: Invalid input
         401:
@@ -101,10 +109,18 @@ paths:
             items:
               $ref: "#/definitions/Pet"
           x-pm-test:
-           - params:
-              - name: status
-                in: query
-                value: '{{status}}'
+          - params:
+            - name: status
+              in: query
+              value: '{{status}}'
+            plugins:
+              - name: valueCheck
+                params:
+                  item: 'code'
+                  value: 200
+              - name: isArray
+                params:
+                  item: 'data'
         400:
           description: "Invalid status value"
           x-pm-test:

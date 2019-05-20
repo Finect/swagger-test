@@ -1,17 +1,36 @@
 'use strict';
 
+const Plugins = require('./plugins/plugins-loader');
+const beautify = require('js-beautify').js;
+
 class Events {
-  static getTests (contentType, status, raw) {
+  /**
+   * Get postman test
+   *
+   * @static
+   * @param {*} endpoint
+   * @param {string} accept
+   * @param {string|number} status
+   * @param {*} test
+   * @returns
+   * @memberof Events
+   */
+  static getTests (endpoint, accept, status, test) {
+    const plugins = new Plugins(`${__dirname}\\plugins\\postman`);
+    plugins.load();
+
+    let result = plugins.accept(accept, status);
+    result = result.concat(plugins.status(status));
+
+    if (test.plugins) {
+      result = result.concat(plugins.definitionTests(test.plugins));
+    }
+
     return {
       listen: 'test',
       script: {
         type: 'text/javascript',
-        exec: (status.toString() !== '204' ? `tests['The Content-Type should be ${contentType}'] = 
-postman.getResponseHeader('Content-Type') && 
-postman.getResponseHeader('Content-Type').includes('${contentType}');
-` : '') + `tests['Status code should be ${status}'] = pm.response.code === ${status}; ` + 
-(status.toString() === '204' ? 'tests["Body is empty"] = (responseBody===null || responseBody.length===0);' : '') + `
-` + (raw || '')
+        exec: beautify(result, { indent_size: 2 })
       }
     };
   }

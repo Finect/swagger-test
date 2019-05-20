@@ -88,7 +88,7 @@ function buildPostmanItems (endpoint) {
         !test.params.find(p => endpoint.security.param.name === p.name &&
           endpoint.security.param.in === p.in)) test.params.push(endpoint.security.param);
 
-      endpoint.postmanItems.push(buildPostmanItem(endpoint.method, endpoint.url, test, content, accept, status));
+      endpoint.postmanItems.push(buildPostmanItem(endpoint, test, content, accept, status));
     });
   });
 }
@@ -124,8 +124,8 @@ function buildDefaultsTest (endpoint, status) {
   return tests;
 }
 
-function buildPostmanItem (method, path, test, content, accept, status) {
-  let url = path;
+function buildPostmanItem (endpoint, test, content, accept, status) {
+  let url = endpoint.url;
 
   const headerParam = test.params.filter(param => param.in === 'header');
   const pathParameters = test.params.filter(param => param.in === 'path');
@@ -142,7 +142,7 @@ function buildPostmanItem (method, path, test, content, accept, status) {
   const item = new Item({
     name: (test.description || `[${status}] on ${url}`).replace('[url]', url),
     request: {
-      method: method,
+      method: endpoint.method,
       url: `{{base-url}}${url.substring(1)}`,
       // @ts-ignore
       header: [
@@ -194,7 +194,7 @@ function buildPostmanItem (method, path, test, content, accept, status) {
     else item.request.body.raw = bodyParam[content];
   }
 
-  item.events.add(Events.getTests(accept, status, test.raw));
+  item.events.add(Events.getTests(endpoint, accept, status, test));
 
   return item;
 }

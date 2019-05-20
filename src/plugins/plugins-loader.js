@@ -111,6 +111,51 @@ class Plugins {
 
     return result;
   }
+
+  /**
+   * Check accepted response
+   * @param {string} accept
+   * @param {string|number} status
+   * @returns {string}
+   */
+  accept (accept, status) {
+    let result = '';
+    this.plugins.forEach(plugin => {
+      if (plugin['accept']) result = result.concat(plugin['accept'](accept, status));
+    });
+
+    return result;
+  }
+
+  /**
+   * Check accepted response
+   * @param {string|number} status
+   * @returns {string}
+   */
+  status (status) {
+    let result = '';
+    this.plugins.forEach(plugin => {
+      if (plugin['status']) result = result.concat(plugin['status'](status));
+    });
+
+    return result;
+  }
+
+  /**
+   * External definition test
+   * @param {Array<*>} tests
+   * @returns {string}
+   */
+  definitionTests (tests) {
+    let result = '';
+    tests.forEach(test => {
+      this.plugins.forEach(plugin => {
+        if (plugin[test.name]) result = result.concat(plugin[test.name](test.params));
+      });
+    });
+
+    return result;
+  }
 }
 
 module.exports = Plugins;
