@@ -1,9 +1,9 @@
 {
-  "name": "swagger-test",
-  "version": "1.1.0-beta.0",
+  "name": "driven-swagger-test",
+  "version": "1.1.1-beta.0",
   "description": "Test swagger quality definition and create Postman collection with test",
   "preferGlobal": true,
-  "bin": "swagger-test.js",
+  "bin": "driven-swagger-test.js",
   "author": "Finect",
   "repository": "https://github.com/Finect/swagger-test",
   "license": "Apache-2.0",
