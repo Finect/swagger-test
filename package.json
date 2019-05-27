@@ -7,6 +7,11 @@
   "author": "Finect",
   "repository": "https://github.com/Finect/swagger-test",
   "license": "Apache-2.0",
+  "keywords": ["swagger", "postman", "definition", "test", "testing", "open api", "specification", "spec"],
+  "bugs": {
+    "url": "https://github.com/Finect/swagger-test/issues"
+  },
+  "homepage": "https://www.finect.com",
   "engines": {
     "node": ">=8"
   },
