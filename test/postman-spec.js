@@ -11,7 +11,7 @@ describe('Swagger definition to Postman test', () => {
     });
   });
 
-  it.only('Pet Store run all', async () => {
+  it('Pet Store run all', async () => {
     try {
       const results = await swaggerTests(`${__dirname}/swaggers/petstore-swagger.yaml`, {
         run: `${__dirname}/data.json`,
