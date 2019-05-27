@@ -16,7 +16,7 @@ module.exports.definitionTestsPassed = (endpoint, security) => {
   let testResults = [];
   if (isNotImplemented(endpoint.def.responses)) return testResults;
 
-  const plugins = new Plugins(`${__dirname}\\plugins\\definitions`);
+  const plugins = new Plugins(`${__dirname}/plugins/definitions`);
   plugins.load();
 
   const consumes = endpoint.swaggerCommons.consumes || endpoint.def.consumes;

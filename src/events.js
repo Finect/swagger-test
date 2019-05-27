@@ -16,7 +16,7 @@ class Events {
    * @memberof Events
    */
   static getTests (endpoint, accept, status, test) {
-    const plugins = new Plugins(`${__dirname}\\plugins\\postman`);
+    const plugins = new Plugins(`${__dirname}/plugins/postman`);
     plugins.load();
 
     let result = plugins.accept(accept, status);

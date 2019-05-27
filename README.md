@@ -1,4 +1,5 @@
 # Definition-driven swagger REST API testing
+[![Build Status](https://travis-ci.org/Finect/swagger-test.svg?branch=develop)](https://travis-ci.org/Finect/swagger-test)
 
 
 ## Breve historia
