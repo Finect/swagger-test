@@ -1,11 +1,11 @@
 {
-  "name": "swagger2pm-test",
+  "name": "swagger-test",
   "version": "1.1.0-beta.0",
-  "description": "Create Postman collection with test from swagger",
+  "description": "Test swagger quality definition and create Postman collection with test",
   "preferGlobal": true,
-  "bin": "swagger2pm-test.js",
+  "bin": "swagger-test.js",
   "author": "Finect",
-  "repository": "https://github.com/Finect/swagger2pm-test",
+  "repository": "https://github.com/Finect/swagger-test",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=8"
