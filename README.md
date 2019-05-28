@@ -2,26 +2,26 @@
 [![Build Status](https://travis-ci.org/Finect/swagger-test.svg?branch=develop)](https://travis-ci.org/Finect/swagger-test)
 
 
-## Breve historia
-Una de las primeras y más importantes tareas dentro de un gobierno de APIs, es la guía de definición. En esta guía dejamos plasmado desde un inicio las buenas prácticas que se deben aplicar sobre nuestras APIs: parámetros, endpoints, respuestas, paginado, esquema de resultados, etc. Hace unos tres años, y al parecer cansado de repetir la misma charla siempre, [Marco Antonio Sanz](https://twitter.com/marantonio82) me comentó la necesidad de hacer un framework que permitiera revisar esta rarea de forma automática.
+## Special thank you
+To [Marco Antonio Sanz](https://twitter.com/marantonio82) and [CloudAppi](https://www.cloudappi.net/en_US/page/homepage) for the whole idea.
 
-Bajo esa idea inicial, aunque un poco más ampliada, nace **swagger-test** una herramienta que permite revisar una API definida en Swagger 2.0 y que además nos permite generar una colección de Postman® con test que permiten chequear nuestra implementación.
+## Why definition test?
+Becouse API-First definition, is better with test
 
-## ¿Por qué test para la definición?
-Aunque muchas veces usamos lenguajes de definición para nuestras APIs, no siempre lo hacemos de la forma correcta:
+- Do you have security in operations? Your response should be contain 401 (unauthorized)!
+- Do you have GET operation? You should be contain consumes (accept) definition.
+- Do you have any param in PATH? Your response should be contain 404 (not found)!
+- Do you have POST/PUT/PATCH operation? Your response should be contain 400 (bad request)!
 
-- Si un endpoint requiere seguridad ¿Definimos un 401 de respuesta?
-- Si definimos un método GET ¿Definimos siempre el tipo de contenido que aceptamos en la respuesta?
-- Si definimos un parámetro por PATH ¿Definimos un 404 de respuesta?
-- Si definimos un método POST/PUT/PATCH ¿Definimos un 400 de respuesta?
+These are just some of the many test included in this tool.
 
-Esos, entre otros, son algunos de los test que ejecuta esta herramienta sobre una definición usando Swagger 2.0.
+## Postman
+Create postman collection from swagger and test your endpoints.
+- [Postman collection SDK](https://www.npmjs.com/package/postman-collection)
+- [Newman - the cli companion for postman](https://www.npmjs.com/package/newman)
 
-## ¿Por qué postman?
-Postman es una herramienta que ya de por sí permite la importación de un Swagger, pero importa o genera un endpoint por cada ruta definida. La colección importada deja fuera la posibilidad de tener un endpoint por cada tipo de respuesta definida, y a su vez, la posibilidad de probar los diferentes casos de uso que se pueden dar en las llamadas a nuestros endpoint.
-
-## ¡Definiendo nuestro test... en Swagger!
-Para definir nuestros test, hemos introducido en Swagger algunas [extensiones](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#vendorExtensions)
+## Testing directly in... Swagger!
+Vendor extensions for test (These can be specified for any response, except `default`.)
 
 ```
 200:
@@ -47,16 +47,16 @@ Para definir nuestros test, hemos introducido en Swagger algunas [extensiones](h
 
 | object &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | description | required |
 | ----------- | ----------- | -------- |
-| x-pm-test | Array en el que se definen todos los test a ejecutar para cada response | false |
-| x-pm-test.description | Descripcción usada para el test (request) | false |
-| x-pm-test.params | Array en el que se definen los valores para cada parámetro | false |
-| x-pm-test.params.name | The name of the parameter. Parameter names are case sensitive. | true |
+| x-pm-test | Tests array | false |
+| x-pm-test.description | Description by test (request) | false |
+| x-pm-test.params | Params array to use in each test | false |
+| x-pm-test.params.name | Param name. | true |
 | x-pm-test.params.in | The location of the parameter. Possible values are "query", "header", "path", "formData" or "body*". | true |
 | x-pm-test.params.value | The value of the parameter used in request. | true |
 
-En caso de no añadir ningún test, la herramienta intentará generar uno para cada response, con los datos declarados en los parámetros. El tipo `default` en la definición del response, es ignorado.
+For cases where any explicit test are be specified, they are inferred directly from the Swagger operation's specification..
 
-Para el tipo **body** se puede especificar un raw del contenido que se desea enviar como parámetro.
+For **body** you can write raw content to specify content (application/json).
 
 ```
 201:
@@ -84,16 +84,16 @@ Para el tipo **body** se puede especificar un raw del contenido que se desea env
       }
 ```
 
-Por defecto, la herramienta incluye los siguientes test:
+By default, the following test are included:
 
-1. Que el content-type devuelto en el response, se corresponda con el `consumes` definido.
-2. Que el http status code devuelto en el response, se corresponda con el http status code definido en el `responses`.
+1. Content type response (content-type) should be defined in `consumes`.
+2. Http status response, should be defined in `responses`.
 
-Adicionalmente, existen test definidos que pueden ser incluidos como plugins en la definición.
+Additionally, you can inclide more tests using plugins.
 
-1. isArray: Permite comprobar que una determinada propiedad del response, es un array
-2. isObject: Permite comprobar que una determinada propiedad del response, es un Object
-3. valueCheck: Permite comprobar el valor de una determinada propiedad del response.
+1. isArray: Check if specific response property is an array
+2. isObject: Check if specific response property is an object
+3. valueCheck: Check if specific response property has specific value.
 
 ```
 200:
