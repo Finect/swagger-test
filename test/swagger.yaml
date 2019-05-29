@@ -1,0 +1,2327 @@
+swagger: "2.0"
+info:
+  version: "4.0.0"
+  title: Content v4
+
+host: api.finect.com
+basePath: /v4
+
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+securityDefinitions:
+  Bearer:
+    description: |
+      Whenever the user wants to access a protected route or resource, the user agent should send the JWT,
+      typically in the **Authorization** header using the **Bearer** schema.
+
+      [How to obtain jwt token](https://developer.finect.com/authentication.html#jwt).
+    type: apiKey
+    name: Authorization
+    in: header
+
+  APIKeyHeader:
+    description: |
+      Whenever the user wants to access a public route or resource, the user agent should send the key,
+      typically in the **key** header. API Keys are simple to use, they’re short, static, and don’t expire unless revoked.
+
+      [How to obtain API Key](https://developer.finect.com/authentication.html#key).
+    type: apiKey
+    in: header
+    name: key
+
+security:
+  - APIKeyHeader: []
+  - Bearer: []
+
+x-models-info:
+  $ref: 'https://stage-models.finect.com/version.json'
+
+x-tagGroups:
+  - name: Content Management
+    tags:
+      - Contents
+      - Articles
+      - Questions
+      - Conversations
+      - Pills
+      - Tag
+      - Postal Codes
+  - name: Products
+    tags:
+      - Products
+      - Reviews
+      - Features
+  - name: Users && Organizations
+    tags:
+      - Profiles
+
+paths:
+  /contents:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+        - Contents
+      summary: Get content
+      description: Returns paged content related to a filter tag
+      # used as the method name of the controller
+      operationId: getContent
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Supported properties: `tag`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+          type: string
+          required: true
+        - name: orderby
+          in: query
+          description: |
+            [ODATA order by](https://developer.finect.com/commons-cases.html#odata).
+          type: array
+          default: ['-revision/created']
+          items:
+            type: string
+            enum:
+              - evergreen
+              - -evergreen
+              - revision/created
+              - -revision/created
+              - revision/updated
+              - -revision/updated
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/limit'
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - contents
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          x-oneOf:
+                          - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                          - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      contents:
+                        type: array
+                        items:
+                          x-oneOf:
+                          - $ref: 'https://stage-models.finect.com/v2/content/article.yaml#/definitions/Article'
+                          - allOf:
+                            - $ref: 'https://stage-models.finect.com/v2/content/question.yaml#/definitions/Question'
+                            - properties:
+                                type:
+                                  type: string
+                                  enum: [question]
+                          - allOf:
+                            - $ref: 'https://stage-models.finect.com/v2/content/pill.yaml#/definitions/Pill'
+                            - properties:
+                                type:
+                                  type: string
+                                  enum: [pill]
+          x-pm-test:
+            - description: '[200] Contents by tag'
+              params:
+              - name: filter
+                in: query
+                value: 'tag+eq+{{tag}}'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/tags:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+      - Tag
+      summary: Get tags list
+      description: Return paged tag list
+      # used as the method name of the controller
+      operationId: getTags
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Properties supported: `top` `window`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+          type: string
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/limit'
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult
+              - properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "https://stage-models.finect.com/v2/content/tag.yaml#/definitions/BaseTag"
+          x-pm-test:
+           - description: '[200] Tag list'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/tags/{tag}:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+      - Tag
+      summary: Get tag details
+      description: Return tag info
+      # used as the method name of the controller
+      operationId: getTag
+      parameters:
+        - name: tag
+          in: path
+          description: Tag id or alias
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    $ref: "https://stage-models.finect.com/v2/content/tag.yaml#/definitions/Tag"
+          x-pm-test:
+           - description: '[200] Tag'
+             params:
+               - name: tag
+                 in: path
+                 value: '{{tag}}'
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Tag not found'
+             params:
+               - name: tag
+                 in: path
+                 value: '1111111'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/conversations:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+        - Conversations
+      summary: Get public conversations
+      description: Returns paged conversations related to a filter tag
+      # used as the method name of the controller
+      operationId: getConversations
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Properties supported: `tag`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+          type: string
+          required: true
+        - name: orderby
+          in: query
+          description: |
+            [ODATA order by](https://developer.finect.com/commons-cases.html#odata).
+          type: array
+          default: ['-created']
+          items:
+            type: string
+            enum:
+              - evergreen
+              - -evergreen
+              - created
+              - -created
+              - updated
+              - -updated
+        - name: limit
+          in: query
+          description: Max number to return
+          required: false
+          type: number
+          default: 10
+          maximum: 50
+          minimum: 3
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult
+              - properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: https://stage-models.finect.com/v2/content/conversation.yaml#/definitions/PublicConversation
+          x-pm-test:
+            - description: '[200] Conversations by tag'
+              params:
+              - name: filter
+                in: query
+                value: 'tag+eq+{{tag}}'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/products:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+        - Products
+      summary: Get products
+      description: Returns paged products list
+      # used as the method name of the controller
+      operationId: getProducts
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Properties supported: `tag`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+          type: string
+        - name: orderby
+          in: query
+          description: |
+            [ODATA order by](https://developer.finect.com/commons-cases.html#odata).
+          type: array
+          items:
+            type: string
+            enum:
+              - evergreen
+              - -evergreen
+        - name: limit
+          in: query
+          description: Max number to return
+          required: false
+          type: number
+          default: 10
+          maximum: 50
+          minimum: 3
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult
+              - properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: https://stage-models.finect.com/v2/product/product.yaml#/definitions/Products
+          x-pm-test:
+           - description: '[200] Products by tag'
+             params:
+               - name: filter
+                 in: query
+                 value: 'tag+eq+{{tag}}'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/products/{product}:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+        - Products
+      summary: Get product
+      description: Returns one product
+      # used as the method name of the controller
+      operationId: getProduct
+      parameters:
+        - name: product
+          in: path
+          description: Product id or alias.
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    $ref: https://stage-models.finect.com/v2/product/product.yaml#/definitions/Products
+          x-pm-test:
+           - description: '[200] Product'
+             params:
+               - name: product
+                 in: path
+                 value: '{{product}}'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+               - name: product
+                 in: path
+                 value: '11111111'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/products/{product}/page:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+        - Products
+      summary: Get product page
+      description: Get page information
+      # used as the method name of the controller
+      operationId: getProductPage
+      parameters:
+        - name: product
+          in: path
+          description: Product id or alias.
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    allOf:
+                    - $ref: https://stage-models.finect.com/v2/content/page.yaml#/definitions/Page
+                    - $ref: https://stage-models.finect.com/v2/product/product.yaml#/definitions/Products
+          x-pm-test:
+            - description: '[200] Page'
+              params:
+                - name: product
+                  in: path
+                  value: '89EB54A4201111E9B26202000AF001C9'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+               - name: product
+                 in: path
+                 value: '11111111'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/products/{product}/lead:
+    x-swagger-router-controller: contents
+    post:
+      tags:
+        - Products
+      summary: Create lead
+      description: Create lead to product
+      # used as the method name of the controller
+      operationId: createProductLead
+      parameters:
+        - name: product
+          in: path
+          description: Product id or alias.
+          type: string
+          required: true
+        - name: lead
+          in: body
+          schema:
+            title: Lead
+            required:
+            - fullName
+            - email
+            - investment
+            properties:
+              fullName:
+                type: string
+              email:
+                type: string
+              investment:
+                type: number
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+          x-pm-test:
+            - description: '[201] Create lead'
+              params:
+                - name: product
+                  in: path
+                  value: '{{product}}'
+                - in: body
+                  application/json: {
+                          "fullName": "User lead test",
+                          "email": "a@b.com",
+                          "investment": 200000
+                        }
+
+        '400':
+          description: Bad request.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+            - description: '[400] Bad request.'
+              params:
+              - name: product
+                in: path
+                value: '{{product}}'
+              - in: body
+                application/json: {
+                        "a": "User lead test",
+                        "b": "a@b.com",
+                        "c": 200000
+                      }
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+              - name: product
+                in: path
+                value: '11111111'
+              - in: body
+                application/json: {
+                        "fullName": "User lead test",
+                        "email": "a@b.com",
+                        "investment": 200000
+                      }
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/products/{product}/questions:
+    x-swagger-router-controller: contents
+    get:
+      x-pm-test-ignore404: true
+      tags:
+        - Products
+      summary: Get questions
+      description: Returns questions related to the product
+      # used as the method name of the controller
+      operationId: getQuestionsInProduct
+      parameters:
+        - name: product
+          in: path
+          description: Product id.
+          type: string
+          format: HEX
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - questions
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                      questions:
+                        type: array
+                        items:
+                          $ref: 'https://stage-models.finect.com/v2/content/question.yaml#/definitions/Question'
+          x-pm-test:
+           - description: '[200] Questions'
+             params:
+               - name: product
+                 in: path
+                 value: '{{product}}'
+
+        '400':
+          description: Bad request (Invalid product).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: product
+                 in: path
+                 value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/products/{product}/reviews:
+    x-swagger-router-controller: reviews
+    get:
+      x-pm-test-ignore404: true
+      tags:
+        - Reviews
+      summary: Get reviews
+      description: Returns product's reviews
+      # used as the method name of the controller
+      operationId: getReviews
+      parameters:
+        - name: filter
+          in: query
+          type: string
+          description: |
+            Supported properties: `score`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+        - name: orderby
+          in: query
+          description: |
+            [ODATA order by](https://developer.finect.com/commons-cases.html#odata).
+          type: array
+          default: ['-revision/created']
+          items:
+            type: string
+            enum:
+              - score
+              - -score
+              - socialStats/likes
+              - -socialStats/likes
+              - revision/created
+              - -revision/created
+        - name: product
+          in: path
+          description: Product id.
+          type: string
+          format: HEX
+          required: true
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/limit'
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - reviews
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          x-oneOf:
+                          - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                          - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      reviews:
+                        type: array
+                        items:
+                          $ref: https://stage-models.finect.com/v2/content/review.yaml#/definitions/Review
+          x-pm-test:
+           - description: '[200] Reviews'
+             params:
+               - name: product
+                 in: path
+                 value: '{{product}}'
+
+        '400':
+          description: Bad request (Invalid product).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: product
+                 in: path
+                 value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+    post:
+      x-allow-anonymous: Para publicar tu review accede a tu cuenta de Finect
+      tags:
+        - Reviews
+      summary: Add review
+      description: Add product's reviews
+      # used as the method name of the controller
+      operationId: createReviews
+      parameters:
+        - name: product
+          in: path
+          description: Product id.
+          type: string
+          format: HEX
+          required: true
+        - name: reviewInfo
+          required: true
+          description: Content review
+          in: body
+          schema:
+            $ref: https://stage-models.finect.com/v2/content/review.yaml#/definitions/Review
+      responses:
+        "201":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    properties:
+                      author:
+                        x-oneOf:
+                        - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                        - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      review:
+                        $ref: https://stage-models.finect.com/v2/content/review.yaml#/definitions/Review
+          x-pm-test:
+           - description: '[201] Add review and features'
+             params:
+              - name: Authorization
+                in: header
+                value: '{{Authorization}}'
+              - name: product
+                in: path
+                value: '{{product}}'
+              - in: body
+                application/json: {
+                      "score": 4,
+                      "title": "Integration test",
+                      "body": {
+                        "text": "test"
+                      },
+                      "features": [
+                        {
+                          "id": "return",
+                          "score": 2,
+                          "body": {
+                              "text": "test"
+                          }
+                        },
+                        {
+                          "id": "risk",
+                          "score": 2,
+                          "body": {
+                              "text": "test"
+                          }
+                        }
+                      ]
+                    }
+             raw: |
+                var jsonData = JSON.parse(responseBody);
+                postman.setEnvironmentVariable("review", jsonData.data.review.id);
+
+        "207":
+          description: Partial Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    properties:
+                      author:
+                        x-oneOf:
+                        - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                        - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      review:
+                        $ref: https://stage-models.finect.com/v2/content/review.yaml#/definitions/Review
+          x-pm-test:
+           - description: '[207] Partial Success'
+             params:
+              - name: Authorization
+                in: header
+                value: '{{Authorization}}'
+              - name: product
+                in: path
+                value: '{{product2}}'
+              - in: body
+                application/json: {
+                      "score": 4,
+                      "title": "Integration test",
+                      "body": {
+                        "text": "test"
+                    },
+                    "features": [
+                      {
+                          "id": "aaaa",
+                          "score": 2,
+                          "body": {
+                              "text": "test"
+                          }
+                      }
+                    ]
+                  }
+
+        '302':
+          description: Redirect to login
+          schema:
+            $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+          x-pm-test:
+           - description: '[302] Add review and features'
+             params:
+              - name: key
+                in: header
+                value: '{{key}}'
+              - name: product
+                in: path
+                value: '{{product}}'
+              - in: body
+                application/json: {
+                      "score": 4,
+                      "title": "Integration test",
+                      "body": {
+                        "text": "test"
+                      },
+                      "features": [
+                        {
+                          "id": "return",
+                          "score": 2,
+                          "body": {
+                              "text": "test"
+                          }
+                        },
+                        {
+                          "id": "risk",
+                          "score": 2,
+                          "body": {
+                              "text": "test"
+                          }
+                        }
+                      ]
+                    }
+
+        '400':
+          description: Bad request (Invalid product).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+              - name: Authorization
+                in: header
+                value: '{{Authorization}}'
+              - name: product
+                in: path
+                value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+              - name: Authorization
+                in: header
+                value: '{{Authorization}}'
+              - name: product
+                in: path
+                value: '11111111'
+              - in: body
+                application/json: {
+                      "score": 4,
+                      "title": "Integration test",
+                      "body": {
+                        "text": "test"
+                      }
+                    }
+
+        '409':
+          description: Duplicate entry.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[409] Duplicate entry'
+             params:
+              - name: Authorization
+                in: header
+                value: '{{Authorization}}'
+              - name: product
+                in: path
+                value: '{{product}}'
+              - in: body
+                application/json: {
+                  "score": 4,
+                  "title": "Integration test",
+                  "body": {
+                    "text": "string",
+                    "metadata": {}
+                  }
+                }
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/products/{product}/reviews/summary:
+    x-swagger-router-controller: reviews
+    get:
+      x-pm-test-ignore404: true
+      tags:
+        - Reviews
+      summary: Reviews summary
+      description: Returns product's reviews summary
+      # used as the method name of the controller
+      operationId: getReviewsSummary
+      parameters:
+        - name: product
+          in: path
+          description: Product id.
+          type: string
+          format: HEX
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        count:
+                          type: number
+                        score:
+                          type: number
+          x-pm-test:
+           - description: '[200] Reviews summary'
+             params:
+               - name: product
+                 in: path
+                 value: '{{product}}'
+
+        '400':
+          description: Bad request (Invalid product).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: product
+                 in: path
+                 value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/reviews/{review}:
+    x-swagger-router-controller: reviews
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Reviews
+      summary: Review
+      description: Get review info
+      # used as the method name of the controller
+      operationId: getReview
+      parameters:
+        - name: review
+          in: path
+          description: Review id.
+          type: string
+          format: HEX
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - review
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          x-oneOf:
+                          - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                          - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      review:
+                        $ref: https://stage-models.finect.com/v2/content/review.yaml#/definitions/Review
+          x-pm-test:
+           - description: '[200] Get review'
+             params:
+              - name: review
+                in: path
+                value: '{{review}}'
+
+        '400':
+          description: Bad request
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+          - description: '[400] Bad request'
+            params:
+              - name: review
+                in: path
+                value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+          - description: '[404] Not found'
+            params:
+              - name: review
+                in: path
+                value: '11111111'
+              - in: body
+                application/json: {
+                    "score": 3
+                  }
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+    patch:
+      security:
+        - Bearer: []
+      tags:
+        - Reviews
+      summary: Update review
+      description: Update product's reviews (rfc7396)
+      # used as the method name of the controller
+      operationId: updateReview
+      parameters:
+        - name: review
+          in: path
+          description: Review id.
+          type: string
+          format: HEX
+          required: true
+        - name: reviewInfo
+          description: Content review
+          in: body
+          schema:
+            properties:
+              score:
+                description: Review score
+                type: number
+              title:
+                description: Title review
+                type: string
+              body:
+                $ref: https://stage-models.finect.com/v2/content/body.yaml#/definitions/Body
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - review
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          x-oneOf:
+                          - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                          - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      review:
+                        $ref: https://stage-models.finect.com/v2/content/review.yaml#/definitions/Review
+          x-pm-test:
+           - description: '[200] Update review'
+             params:
+              - name: review
+                in: path
+                value: '{{review}}'
+              - in: body
+                application/json: {
+                    "score": 3,
+                    "features": [
+                        {
+                            "id": 'return',
+                            "score": 5
+                        },
+                        {
+                            "id": 'risk',
+                            "body": {
+                                "text": "updated"
+                            }
+                        }
+                    ]
+                  }
+
+        "207":
+          description: Partial Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - review
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          x-oneOf:
+                          - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                          - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      review:
+                        $ref: https://stage-models.finect.com/v2/content/review.yaml#/definitions/Review
+          x-pm-test:
+           - description: '[207] Update review'
+             params:
+              - name: review
+                in: path
+                value: '{{review}}'
+              - in: body
+                application/json: {
+                    "score": 3,
+                    "features": [
+                        {
+                            "id": "aaaaaa",
+                            "score": 5
+                        },
+                        {
+                            "id": "risk",
+                            "body": {
+                                "text": "updated"
+                            }
+                        }
+                    ]
+                  }
+
+        '400':
+          description: Bad request
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+          - description: '[400] Bad request'
+            params:
+              - name: review
+                in: path
+                value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+          - description: '[404] Not found'
+            params:
+              - name: review
+                in: path
+                value: '11111111'
+              - in: body
+                application/json: {
+                    "score": 3
+                  }
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Reviews
+      summary: Delete review
+      description: Delete product's reviews
+      # used as the method name of the controller
+      operationId: deleteReview
+      parameters:
+        - name: review
+          in: path
+          description: Review id.
+          type: string
+          format: HEX
+          required: true
+      responses:
+        "204":
+          description: Success
+          x-pm-test:
+           - description: '[204] Delete review'
+             params:
+              - name: Authorization
+                in: header
+                value: '{{Authorization2}}'
+              - name: review
+                in: path
+                value: '0575B570262442E7B02D48C5BB3F9999'
+
+        '400':
+          description: Bad request
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+          - description: '[400] Bad request'
+            params:
+              - name: review
+                in: path
+                value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+          - description: '[404] Not found'
+            params:
+              - name: review
+                in: path
+                value: '11111111'
+              - in: body
+                application/json: {
+                    "score": 3
+                  }
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+
+  /contents/reviews/{review}/comments:
+    x-swagger-router-controller: reviews
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Reviews
+      summary: Add comment
+      description: Add review's comment
+      # used as the method name of the controller
+      operationId: createComment
+      parameters:
+        - name: review
+          in: path
+          description: Review id.
+          type: string
+          format: HEX
+          required: true
+        - name: comment
+          description: Content comment
+          in: body
+          schema:
+            $ref: https://stage-models.finect.com/v2/content/comment.yaml#/definitions/Comment
+      responses:
+        "201":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    required:
+                      - author
+                      - comment
+                    properties:
+                      author:
+                        x-oneOf:
+                        - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                        - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      comment:
+                        $ref: https://stage-models.finect.com/v2/content/comment.yaml#/definitions/Comment
+          x-pm-test:
+           - description: '[201] Add comment'
+             params:
+              - name: review
+                in: path
+                value: '{{review}}'
+              - in: body
+                application/json: {
+                    "body": {
+                      "text": "string",
+                      "metadata": {}
+                    }
+                  }
+             raw: |
+                var jsonData = JSON.parse(responseBody);
+                postman.setEnvironmentVariable("comment", jsonData.data.comment.id);
+
+        '400':
+          description: Bad request
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+              - name: review
+                in: path
+                value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+              - name: review
+                in: path
+                value: '11111111'
+              - in: body
+                application/json: {
+                    "body": {
+                      "text": "string",
+                      "metadata": {}
+                    }
+                  }
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/reviews/comments/{comment}:
+    x-swagger-router-controller: reviews
+    patch:
+      security:
+        - Bearer: []
+      tags:
+        - Reviews
+      summary: Update comment
+      description: update review's comment (rfc7396)
+      # used as the method name of the controller
+      operationId: updateComment
+      parameters:
+        - name: comment
+          in: path
+          description: Comment id.
+          type: string
+          format: HEX
+          required: true
+        - name: commentInfo
+          description: Content comment
+          in: body
+          schema:
+            $ref: https://stage-models.finect.com/v2/content/comment.yaml#/definitions/Comment
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    required:
+                      - author
+                      - comment
+                    properties:
+                      author:
+                        x-oneOf:
+                        - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                        - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      comment:
+                        $ref: https://stage-models.finect.com/v2/content/comment.yaml#/definitions/Comment
+
+          x-pm-test:
+           - description: '[200] Update comment'
+             params:
+              - name: comment
+                in: path
+                value: '{{comment}}'
+              - in: body
+                application/json: {
+                    "body": {
+                      "text": "update string"
+                    }
+                  }
+
+        '400':
+          description: Bad request
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: comment
+                 in: path
+                 value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+              - name: comment
+                in: path
+                value: '11111111'
+              - in: body
+                application/json: {
+                    "body": {
+                      "text": "update string"
+                    }
+                  }
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Reviews
+      summary: Delete comment
+      description: Delete review's comment
+      # used as the method name of the controller
+      operationId: deleteComment
+      parameters:
+        - name: comment
+          in: path
+          description: Comment id.
+          type: string
+          format: HEX
+          required: true
+      responses:
+        "204":
+          description: Success
+          x-pm-test:
+           - description: '[204] Delete comment'
+             params:
+              - name: comment
+                in: path
+                value: '{{comment}}'
+
+        '400':
+          description: Bad request
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: comment
+                 in: path
+                 value: 'zzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+              - name: comment
+                in: path
+                value: '11111111'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/catalog/features:
+    x-swagger-router-controller: reviews
+    get:
+      x-pm-test-ignore404: true
+      tags:
+        - Features
+      summary: Get features dictionary
+      description: Returns product's features dictionary
+      # used as the method name of the controller
+      operationId: getCatalogFeatures
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    required:
+                      - id
+                      - description
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+          x-pm-test:
+           - description: '[200] Features catalog '
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/questions:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+        - Questions
+      summary: Get questions
+      description: Returns paged questions objects
+      # used as the method name of the controller
+      operationId: getQuestions
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Properties supported: `tag` `editorial`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+          type: string
+        - name: orderby
+          in: query
+          description: |
+            [ODATA order by](https://developer.finect.com/commons-cases.html#odata). Minus sign mean desc order.
+          type: array
+          default: ['-revision/created']
+          items:
+            type: string
+            enum:
+              - 'evergreen'
+              - '-evergreen'
+              - 'revision/created'
+              - '-revision/created'
+              - 'stats/answers'
+              - '-stats/answers'
+        - name: limit
+          in: query
+          description: Max number to return
+          required: false
+          type: number
+          default: 10
+          maximum: 50
+          minimum: 3
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: 'https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult'
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - questions
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                      questions:
+                        type: array
+                        items:
+                          $ref: 'https://stage-models.finect.com/v2/content/question.yaml#/definitions/Question'
+          x-pm-test:
+            - description: '[200] Questions by tag'
+              params:
+              - name: filter
+                in: query
+                value: 'tag+eq+{{tag}}'
+            - description: '[200] Questions by tag & editorial'
+              params:
+              - name: filter
+                in: query
+                value: 'tag+eq+{{tag}}+and+editorial+eq+true'
+            - description: '[200] Questions by tag & latest'
+              params:
+              - name: filter
+                in: query
+                value: 'tag+eq+{{tag}}'
+              - name: orderby
+                in: query
+                value: '-revision/created'
+            - description: '[200] Questions by tag & answers'
+              params:
+              - name: filter
+                in: query
+                value: 'tag+eq+{{tag}}'
+              - name: orderby
+                in: query
+                value: 'stats/answers'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/questions/{question}/products:
+    x-swagger-router-controller: questions
+    get:
+      x-pm-test-ignore404: true
+      tags:
+        - Questions
+      summary: Products
+      description: Get products related to question
+      # used as the method name of the controller
+      operationId: getProductsInQuestion
+      parameters:
+        - name: question
+          in: path
+          type: number
+          format: int32
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: 'https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result'
+              - properties:
+                  data:
+                    $ref: https://stage-models.finect.com/v2/product/product.yaml#/definitions/Products
+          x-pm-test:
+            - description: '[200] Products'
+              params:
+              - name: question
+                in: path
+                value: '69'
+
+        '400':
+          description: Bad request (Invalid format).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: question
+                 in: path
+                 value: 'zzzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/pills:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+        - Pills
+      summary: Get pills
+      description: Returns paged pill objects
+      # used as the method name of the controller
+      operationId: getPills
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Properties supported: `tag`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+          type: string
+        - name: orderby
+          in: query
+          description: |
+            [ODATA order by](https://developer.finect.com/commons-cases.html#odata). Minus sign mean desc order.
+          type: array
+          items:
+            type: string
+            enum:
+                - evergreen
+                - -evergreen
+        - name: limit
+          in: query
+          description: Max number to return
+          required: false
+          type: number
+          default: 10
+          maximum: 50
+          minimum: 3
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: 'https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult'
+              - properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: 'https://stage-models.finect.com/v2/content/pill.yaml#/definitions/Pill'
+          x-pm-test:
+            - description: '[200] Pills by tag'
+              params:
+              - name: filter
+                in: query
+                value: 'tag+eq+{{tag}}'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/articles:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+        - Articles
+      summary: Get articles
+      description: Returns paged articles objects
+      # used as the method name of the controller
+      operationId: getArticles
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Properties supported: `tag`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+          type: string
+        - name: orderby
+          in: query
+          description: |
+            [ODATA order by](https://developer.finect.com/commons-cases.html#odata). Minus sign mean desc order.
+          type: array
+          default: ['-revision/created']
+          items:
+            type: string
+            enum:
+              - evergreen
+              - -evergreen
+              - 'revision/created'
+              - '-revision/created'
+              - 'revision/updated'
+              - '-revision/updated'
+        - name: limit
+          in: query
+          description: Max number to return
+          required: false
+          type: number
+          default: 10
+          maximum: 50
+          minimum: 3
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - articles
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          x-oneOf:
+                          - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                          - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      articles:
+                        type: array
+                        items:
+                          $ref: 'https://stage-models.finect.com/v2/content/article.yaml#/definitions/Article'
+          x-pm-test:
+           - description: '[200] Articles by tag'
+             params:
+               - name: filter
+                 in: query
+                 value: 'tag+eq+{{tag}}'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/articles/{article}/comments:
+    x-swagger-router-controller: comments
+    get:
+      x-pm-test-ignore404: true
+      tags:
+        - Articles
+      summary: Article comments
+      description: Returns paged article comments
+      # used as the method name of the controller
+      operationId: getArticleComments
+      parameters:
+        - name: article
+          in: path
+          description: Article id.
+          type: string
+          format: HEX
+          required: true
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/limit'
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult
+              - properties:
+                  data:
+                    required:
+                      - authors
+                      - comments
+                    properties:
+                      authors:
+                        type: array
+                        items:
+                          x-oneOf:
+                          - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                          - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+                      comments:
+                        type: array
+                        items:
+                          allOf:
+                          - $ref: 'https://stage-models.finect.com/v2/content/comment.yaml#/definitions/Comment'
+                          - properties:
+                              image:
+                                x-nullable: true
+                                type: string
+          x-pm-test:
+           - description: '[200] Comments'
+             params:
+               - name: article
+                 in: path
+                 value: '{{article}}'
+
+        '400':
+          description: Bad request (Invalid format).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: article
+                 in: path
+                 value: 'zzzzzzzz'
+
+        '401':
+          description: Unauthorized.
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Articles
+      summary: Create Article comments
+      description: Create new comment on article
+      operationId: createArticleComments
+      parameters:
+        - name: article
+          in: path
+          description: Article id.
+          type: string
+          format: HEX
+          required: true
+        - name: comment
+          in: body
+          required: true
+          schema:
+            allOf:
+            - $ref: 'https://stage-models.finect.com/v2/content/comment.yaml#/definitions/Comment'
+            - properties:
+                image:
+                  x-nullable: true
+                  type: string
+      responses:
+        "201":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    allOf:
+                    - $ref: 'https://stage-models.finect.com/v2/content/comment.yaml#/definitions/Comment'
+                    - properties:
+                        image:
+                          x-nullable: true
+                          type: string
+          x-pm-test:
+           - description: '[201] Add comment'
+             params:
+              - name: article
+                in: path
+                value: '{{article}}'
+              - in: body
+                application/json: {
+                    "body": {
+                      "text": "string",
+                      "metadata": { "html": "string" }
+                    },
+                    "image": null
+                  }
+
+        '400':
+          description: Bad request (Invalid format).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: article
+                 in: path
+                 value: 'zzzzzzzz'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+              - name: article
+                in: path
+                value: '11111111'
+              - in: body
+                application/json: {
+                    "body": {
+                      "text": "string",
+                      "metadata": {}
+                    },
+                    "image": null
+                  }
+
+        '401':
+          description: Unauthorized.
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/profiles:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+      - Profiles
+      summary: Get profiles
+      description: Returns paged profiles related to a filter tag
+      # used as the method name of the controller
+      operationId: getProfiles
+      parameters:
+        - name: filter
+          in: query
+          description: |
+            Properties supported: `tag` `subtype`
+
+            [ODATA query filter](https://developer.finect.com/commons-cases.html#odata).
+          type: string
+        - name: orderby
+          in: query
+          description: |
+            [ODATA order by](https://developer.finect.com/commons-cases.html#odata). Minus sign mean desc order.
+          type: array
+          items:
+            type: string
+            enum:
+              - evergreen
+              - -evergreen
+        - name: limit
+          in: query
+          description: Max number to return
+          required: false
+          type: number
+          default: 10
+          maximum: 50
+          minimum: 3
+        - $ref: 'https://stage-models.finect.com/v2/commons/parameters.yaml#/parameters/offset'
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/PagedResult
+              - properties:
+                  data:
+                    type: array
+                    items:
+                      x-oneOf:
+                      - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                      - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+          x-pm-test:
+           - description: '[200] Profiles'
+             params:
+               - name: filter
+                 in: query
+                 value: 'tag+eq+{{tag}}'
+
+        '400':
+          description: Bad request (Invalid filter).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: filter
+                 in: query
+                 value: 'tag={{tag}}'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/profiles/{profile}:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+      - Profiles
+      summary: Get profile
+      description: Returns public profile details
+      # used as the method name of the controller
+      operationId: getProfile
+      parameters:
+        - name: profile
+          in: path
+          description: Content profile details.
+          type: string
+          format: HEX
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    x-oneOf:
+                    - $ref: https://stage-models.finect.com/v2/profile/user.yaml#/definitions/User
+                    - $ref: https://stage-models.finect.com/v2/profile/organization.yaml#/definitions/Organization
+          x-pm-test:
+            - description: '[200] User card'
+              params:
+                - name: profile
+                  in: path
+                  value: 00016a33bea0156ea88d4ea16a33bea0156ea88d4ea
+            - description: '[200] Organization card'
+              params:
+                - name: profile
+                  in: path
+                  value: 07C6C4A4FF5F11E78D4902000AEE01C9
+
+
+        '400':
+          description: Bad request (Invalid format).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: profile
+                 in: path
+                 value: 'zzzzzzzz'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Profile not found'
+             params:
+               - name: profile
+                 in: path
+                 value: '1111111'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+  /contents/postalcodes/{code}:
+    x-swagger-router-controller: contents
+    get:
+      tags:
+      - Postal Codes
+      summary: Get postal code details
+      description: Returns city and province by postal code
+      # used as the method name of the controller
+      operationId: getPostalcode
+      parameters:
+        - name: code
+          in: path
+          description: Postal code.
+          type: integer
+          minimum: 0
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            allOf:
+              - $ref: >-
+                  https://stage-models.finect.com/v2/commons/result.yaml#/definitions/Result
+              - properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        code:
+                          type: integer
+                        city:
+                          type: string
+                        province:
+                          type: string
+          x-pm-test:
+           - description: '[200] Postal code details'
+             params:
+               - name: code
+                 in: path
+                 value: '1193'
+
+        '400':
+          description: Bad request (Invalid code).
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[400] Bad request'
+             params:
+               - name: code
+                 in: path
+                 value: '-1'
+
+        '401':
+          description: Unauthorized. Apikey required.
+          x-pm-test:
+            - description: '[401] Unauthorized.'
+
+        '404':
+          description: Not found.
+          schema:
+            $ref: 'https://stage-models.finect.com/v2/commons/error.yaml#/definitions/Error'
+          x-pm-test:
+           - description: '[404] Not found'
+             params:
+               - name: code
+                 in: path
+                 value: '999999'
+
+        # responses may fall through to errors
+        default:
+          $ref: 'https://stage-models.finect.com/v2/commons/responses.yaml#/responses/Error'
+
+
+  /swagger:
+    x-swagger-pipe: swagger_raw
+

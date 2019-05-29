@@ -190,4 +190,17 @@ describe('Swagger definition to Postman test', () => {
       .then(() => done())
       .catch(error => done(error));
   });
+
+  it.only('Finect contents API', done => {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    swaggerTests(`${__dirname}/swagger.yaml`, {
+      run: `${__dirname}/development-data.json`,
+      save: true,
+      global: [
+        { name: 'base-url', value: `http://localhost:10010` }
+      ]
+    })
+      .then(() => done())
+      .catch(error => done(error));
+  });
 });

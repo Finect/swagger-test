@@ -158,8 +158,8 @@ async function getSecurities (securityDef, tokenUrl) {
   const security = {};
 
   // only support password flow
-  const oauth2 = securityDef.securities.find(security => security.type === 'oauth2');
-  if (oauth2) {
+  const oauth = securityDef.securities.filter(security => security.type === 'oauth2');
+  for (const oauth2 of oauth) {
     switch (oauth2.flow) {
     case 'password':
       const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
@@ -210,35 +210,35 @@ async function getSecurities (securityDef, tokenUrl) {
         }
       };
     }
-  }
+  };
 
-  const basic = securityDef.securities.find(security => security.type === 'basic');
-  if (basic) {
-    const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
+  securityDef.securities.filter(security => security.type === 'basic')
+    .forEach(basic => {
+      const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
 
-    security[basic.name] = {
-      param: {
-        in: 'header',
-        name: 'Authorization',
-        value: `{{${basic.name}}}`
-      },
-      variable: {
-        name: basic.name,
-        value: 'Basic ' + b.toString('base64')
-      }
-    };
-  }
+      security[basic.name] = {
+        param: {
+          in: 'header',
+          name: 'Authorization',
+          value: `{{${basic.name}}}`
+        },
+        variable: {
+          name: basic.name,
+          value: 'Basic ' + b.toString('base64')
+        }
+      };
+    });
 
-  const apiKey = securityDef.securities.find(security => security.type === 'apiKey');
-  if (apiKey) {
-    security[apiKey.name] = {
-      param: {
-        in: apiKey.in,
-        name: apiKey.name,
-        value: `{{${apiKey.name}}}`
-      }
-    };
-  }
+  securityDef.securities.filter(security => security.type === 'apiKey')
+    .forEach(apiKey => {
+      security[apiKey.name] = {
+        param: {
+          in: apiKey.in,
+          name: apiKey.name,
+          value: `{{${apiKey.name}}}`
+        }
+      };
+    });
 
   return security;
 }
