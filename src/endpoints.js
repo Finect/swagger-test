@@ -59,7 +59,7 @@ class Endpoints {
     let security;
     const securityDefinitions = { securities: [] };
     Object.keys(this.swagger.securityDefinitions).forEach(sec => {
-      securityDefinitions.securities.push(Object.assign({ name: sec }, this.swagger.securityDefinitions[sec]));
+      securityDefinitions.securities.push(Object.assign({ key: sec }, this.swagger.securityDefinitions[sec]));
     });
 
     if (this.swagger.securityDefinitions) {
@@ -181,14 +181,14 @@ async function getSecurities (securityDef, tokenUrl) {
       try {
         const response = await request.post(authRequest);
         const result = JSON.parse(response);
-        security[oauth2.name] = {
+        security[oauth2.key] = {
           param: {
             in: 'header',
             name: 'Authorization',
-            value: `{{${oauth2.name}}}`
+            value: `{{authorization}}`
           },
           variable: {
-            name: oauth2.name,
+            name: 'authorization',
             value: result.token_type + ' ' + result.access_token
           }
         };
@@ -198,14 +198,14 @@ async function getSecurities (securityDef, tokenUrl) {
 
       break;
     default:
-      security[oauth2.name] = {
+      security[oauth2.key] = {
         param: {
           in: 'header',
           name: 'Authorization',
-          value: `{{${oauth2.name}}}`
+          value: `{{authorization}}`
         },
         variable: {
-          name: oauth2.name,
+          name: 'authorization',
           value: 'unsupported'
         }
       };
@@ -216,7 +216,7 @@ async function getSecurities (securityDef, tokenUrl) {
     .forEach(basic => {
       const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
 
-      security[basic.name] = {
+      security[basic.key] = {
         param: {
           in: 'header',
           name: 'Authorization',
@@ -231,7 +231,7 @@ async function getSecurities (securityDef, tokenUrl) {
 
   securityDef.securities.filter(security => security.type === 'apiKey')
     .forEach(apiKey => {
-      security[apiKey.name] = {
+      security[apiKey.key] = {
         param: {
           in: apiKey.in,
           name: apiKey.name,

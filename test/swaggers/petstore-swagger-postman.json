@@ -4,7 +4,7 @@
       "name": "pet",
       "item": [
         {
-          "id": "c0739b19-cce2-485b-a27a-8e07bc471a75",
+          "id": "e0249ccc-743d-46a5-b9d7-4cc9478f3db5",
           "name": "[201] on /pet",
           "request": {
             "url": {
@@ -25,7 +25,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "POST",
@@ -39,7 +39,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "fab8c3fb-e58c-42d9-980f-d3f18d9162a2",
+                "id": "67e682de-43d5-46f5-81fc-614b44b27ee6",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -63,7 +63,7 @@
           ]
         },
         {
-          "id": "65134df4-1b7f-44c6-91f4-3ffb2cd816ab",
+          "id": "4c4ef832-40d3-4766-b603-846ff4c353eb",
           "name": "['400'] on /pet",
           "request": {
             "url": {
@@ -84,7 +84,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "POST",
@@ -97,7 +97,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "4e9a8f07-2790-413c-ad6e-4d55b4fa504a",
+                "id": "f5676067-cb24-422a-b2fc-f118e1bc9104",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -112,7 +112,7 @@
           ]
         },
         {
-          "id": "05cddfd2-4628-4f39-af0b-530d83dd1332",
+          "id": "becf15a8-8d25-44ff-b6a7-88711d2c4b66",
           "name": "['401'] on /pet",
           "request": {
             "url": {
@@ -142,7 +142,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "ed9d71ad-de81-4577-be89-fd88cfdd0635",
+                "id": "9d8b8b31-3040-43d6-8ddf-b6db0d7f6582",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -157,7 +157,7 @@
           ]
         },
         {
-          "id": "eec57268-1a66-4c26-a0d5-b14a12c99173",
+          "id": "cfed3ebe-9ff8-4809-8563-4305eae47706",
           "name": "[200] on /pet/findByStatus",
           "request": {
             "url": {
@@ -186,7 +186,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "GET",
@@ -200,7 +200,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "6c992cbf-efd6-41e5-b420-e3557a0c3928",
+                "id": "04a97194-e51d-435e-bad2-4df72672a7c5",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -223,7 +223,7 @@
           ]
         },
         {
-          "id": "3aeaa549-cef0-4a8d-b9b6-7b8e9be8c5bc",
+          "id": "4a34bd7e-cf69-41f2-85b0-34d187e1fa13",
           "name": "[400] on /pet/findByStatus",
           "request": {
             "url": {
@@ -252,7 +252,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "GET",
@@ -266,7 +266,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "7a055a80-eebb-4e5f-b082-ca4a3978621e",
+                "id": "f0206255-09fa-4307-ad4e-4dfcc7a7f804",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -281,7 +281,7 @@
           ]
         },
         {
-          "id": "e87c2c6a-c387-4612-ba0b-f52aa724178b",
+          "id": "6669b355-937d-4ed0-b1be-59c1330da74f",
           "name": "['401'] on /pet/findByStatus",
           "request": {
             "url": {
@@ -321,7 +321,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "a48cc76a-7f81-49c4-9342-f5124b7a90ae",
+                "id": "364eb505-db29-4dbd-b776-2f6ddd5c9d6e",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -336,7 +336,7 @@
           ]
         },
         {
-          "id": "cc5a1ea5-7f04-44f0-860b-1103c246e92d",
+          "id": "41caaaae-2238-41ab-a46d-60d7841ca9fb",
           "name": "[404] on /pet/findByStatus",
           "request": {
             "url": {
@@ -365,7 +365,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "GET",
@@ -379,7 +379,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "1af94c36-ae20-47b6-8a12-e65384bfc940",
+                "id": "e1921b5b-9ec9-48da-86fa-646c0f5c688f",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -394,7 +394,7 @@
           ]
         },
         {
-          "id": "75565a09-af74-4b4a-a787-d73533af8985",
+          "id": "71096037-5ad7-4c17-a6ff-c2ec34cfc44d",
           "name": "[200] on /pet/:petId",
           "request": {
             "url": {
@@ -437,7 +437,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "11eb3be0-a708-4b10-af09-8c2277c9400e",
+                "id": "17c64fb1-2051-4d79-97fe-56612e523c39",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -452,7 +452,7 @@
           ]
         },
         {
-          "id": "c68f7ec5-ce52-4b8a-95ad-804f6460ceb6",
+          "id": "2f9b3a89-f699-474c-b15e-bbbbe8002dab",
           "name": "[400] on /pet/:petId",
           "request": {
             "url": {
@@ -495,7 +495,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "9bdd8875-f540-4709-8775-a5012bd8c645",
+                "id": "352bf71b-6ff9-4811-a0bd-5d43e2b70728",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -510,7 +510,7 @@
           ]
         },
         {
-          "id": "f00750a4-cf8e-4bcd-8ade-570970678521",
+          "id": "e9ec2365-6563-4ede-8bc7-5120f6e2deac",
           "name": "['401'] on /pet/{petId}",
           "request": {
             "url": {
@@ -549,7 +549,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "ebf9d0af-f8fc-4d81-93e1-3fc156f006b6",
+                "id": "2741aff6-bff6-4cbf-a4c1-663b36248fbd",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -564,7 +564,7 @@
           ]
         },
         {
-          "id": "58733381-f08d-4187-bc90-946f67382b56",
+          "id": "17b515f5-34dd-4939-8202-0504952bd3ca",
           "name": "['404'] on /pet/{petId}",
           "request": {
             "url": {
@@ -607,7 +607,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "56465818-2aa1-49eb-b090-eb0a6da3bcdc",
+                "id": "20752c93-f0b7-4109-9802-9b21d1cff160",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -622,7 +622,7 @@
           ]
         },
         {
-          "id": "82963020-583c-4540-9bc7-0c9bf13515bc",
+          "id": "cba992bb-2969-4866-a742-f64977d6b7cf",
           "name": "[200] on /pet/:petId",
           "request": {
             "url": {
@@ -651,7 +651,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "PUT",
@@ -665,7 +665,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "f325226f-cf05-4873-8659-736cbcfccc06",
+                "id": "750755ce-8f7a-4c44-9aa8-f575845fd06f",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -680,7 +680,7 @@
           ]
         },
         {
-          "id": "11008e8b-70b8-4d9f-a361-738e9e3537d5",
+          "id": "9c379acc-e14d-4d27-ad12-4c2440ac3e24",
           "name": "[400] on /pet/:petId",
           "request": {
             "url": {
@@ -709,7 +709,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "PUT",
@@ -723,7 +723,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "96a71e32-4dc3-45f8-aeb9-e01956aa0e20",
+                "id": "7f4f6059-3ba4-43d3-928c-2ccb362a750b",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -738,7 +738,7 @@
           ]
         },
         {
-          "id": "0eb1bf98-69ee-4e34-b5f2-6bf91f12ba33",
+          "id": "e3e36fc0-69a8-466e-9e6f-33671fd2d9ef",
           "name": "['401'] on /pet/{petId}",
           "request": {
             "url": {
@@ -776,7 +776,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "12f48145-d337-4afc-99b0-aa71ce2a8f44",
+                "id": "073a7e36-458f-4e52-9271-5493510b6dfb",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -791,7 +791,7 @@
           ]
         },
         {
-          "id": "e58e978f-037e-40ec-9eec-2fbceba8cd7d",
+          "id": "443478a2-4535-4471-b1c5-20134aec1bae",
           "name": "[404] on /pet/:petId",
           "request": {
             "url": {
@@ -820,7 +820,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "PUT",
@@ -834,7 +834,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "7cd149be-1a9c-469c-bc90-73c66ba25f0d",
+                "id": "d213d9e4-f950-4fbb-9b2a-c6235ec1ae54",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -849,7 +849,7 @@
           ]
         },
         {
-          "id": "5208bcf7-3459-4a3e-8785-acf2aae17a25",
+          "id": "6460cd23-7dc3-4aa5-847f-e961c4b69a8e",
           "name": "[204] on /pet/:petId",
           "request": {
             "url": {
@@ -883,7 +883,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "DELETE",
@@ -897,7 +897,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "475b7cab-ce3a-4460-ba4e-71747fa20d9b",
+                "id": "ecb8f47a-edc0-44f4-aaa7-44e66f07758d",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Body is empty\", function() {",
@@ -913,7 +913,7 @@
           ]
         },
         {
-          "id": "849f6044-b48e-4965-bb7c-4722b7d2a3f6",
+          "id": "91d0c21f-45e3-4f50-9aba-008b58d63fa3",
           "name": "[400] on /pet/:petId",
           "request": {
             "url": {
@@ -947,7 +947,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "DELETE",
@@ -961,7 +961,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "61910cee-a313-4cac-85bf-b74761e5de7b",
+                "id": "ff7c9e09-6f9b-416c-a973-f32d06eaae2e",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -976,7 +976,7 @@
           ]
         },
         {
-          "id": "772c9c75-e977-412a-a285-55032d7f33d0",
+          "id": "0861e9df-1988-40b3-95e2-4b281846a07b",
           "name": "['401'] on /pet/{petId}",
           "request": {
             "url": {
@@ -1020,7 +1020,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "fa6fb618-b67e-4cbe-aef7-6cac5b63bc76",
+                "id": "03ea0f0c-1001-45a7-a1a2-8ae589f1d2c7",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -1035,7 +1035,7 @@
           ]
         },
         {
-          "id": "696380f3-627f-4e15-9ae0-cb85214b08c1",
+          "id": "125b322e-1194-4609-9d16-2ec584ef66df",
           "name": "['404'] on /pet/{petId}",
           "request": {
             "url": {
@@ -1069,7 +1069,7 @@
               },
               {
                 "key": "Authorization",
-                "value": "{{petstore_auth}}"
+                "value": "{{authorization}}"
               }
             ],
             "method": "DELETE",
@@ -1083,7 +1083,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "ed7c182d-2f39-4e2a-a164-4cd1dcf20245",
+                "id": "3364ba4b-d010-4dca-b638-698cfc913a94",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -1109,10 +1109,10 @@
       "key": "status"
     },
     {
-      "id": "petstore_auth",
+      "id": "authorization",
       "type": "string",
       "value": "unsupported",
-      "key": "petstore_auth"
+      "key": "authorization"
     },
     {
       "id": "base-url",
@@ -1122,7 +1122,7 @@
     }
   ],
   "info": {
-    "_postman_id": "b3db0aa6-8288-4258-8b33-56c052d430b0",
+    "_postman_id": "8df406e0-e5d0-4e7d-8974-4ea9e31c5373",
     "name": "Swagger Petstore",
     "version": {
       "raw": "1.0.0",
