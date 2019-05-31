@@ -59,7 +59,7 @@ class Endpoints {
     let security;
     const securityDefinitions = { securities: [] };
     Object.keys(this.swagger.securityDefinitions).forEach(sec => {
-      securityDefinitions.securities.push(Object.assign({ name: sec }, this.swagger.securityDefinitions[sec]));
+      securityDefinitions.securities.push(Object.assign({ key: sec }, this.swagger.securityDefinitions[sec]));
     });
 
     if (this.swagger.securityDefinitions) {
@@ -126,7 +126,7 @@ class Endpoints {
         result.collection.variables.add(new Variable({
           key: 'base-url',
           id: 'base-url',
-          value: variable.value + this.swagger.basePath,
+          value: variable.value + (this.swagger.basePath || ''),
           type: 'string'
         }));
 
@@ -145,7 +145,7 @@ class Endpoints {
       result.collection.variables.add(new Variable({
         key: 'base-url',
         id: 'base-url',
-        value: this.swagger.schemes[0] + '://' + this.swagger.host + this.swagger.basePath,
+        value: this.swagger.schemes[0] + '://' + this.swagger.host + (this.swagger.basePath || ''),
         type: 'string'
       }));
     }
@@ -158,8 +158,8 @@ async function getSecurities (securityDef, tokenUrl) {
   const security = {};
 
   // only support password flow
-  const oauth2 = securityDef.securities.find(security => security.type === 'oauth2');
-  if (oauth2) {
+  const oauth = securityDef.securities.filter(security => security.type === 'oauth2');
+  for (const oauth2 of oauth) {
     switch (oauth2.flow) {
     case 'password':
       const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
@@ -181,14 +181,14 @@ async function getSecurities (securityDef, tokenUrl) {
       try {
         const response = await request.post(authRequest);
         const result = JSON.parse(response);
-        security[oauth2.name] = {
+        security[oauth2.key] = {
           param: {
             in: 'header',
             name: 'Authorization',
-            value: `{{${oauth2.name}}}`
+            value: `{{authorization}}`
           },
           variable: {
-            name: oauth2.name,
+            name: 'authorization',
             value: result.token_type + ' ' + result.access_token
           }
         };
@@ -198,47 +198,47 @@ async function getSecurities (securityDef, tokenUrl) {
 
       break;
     default:
-      security[oauth2.name] = {
+      security[oauth2.key] = {
         param: {
           in: 'header',
           name: 'Authorization',
-          value: `{{${oauth2.name}}}`
+          value: `{{authorization}}`
         },
         variable: {
-          name: oauth2.name,
+          name: 'authorization',
           value: 'unsupported'
         }
       };
     }
-  }
+  };
 
-  const basic = securityDef.securities.find(security => security.type === 'basic');
-  if (basic) {
-    const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
+  securityDef.securities.filter(security => security.type === 'basic')
+    .forEach(basic => {
+      const b = Buffer.from(securityDef.value.client_id + ':' + securityDef.value.client_secret);
 
-    security[basic.name] = {
-      param: {
-        in: 'header',
-        name: 'Authorization',
-        value: `{{${basic.name}}}`
-      },
-      variable: {
-        name: basic.name,
-        value: 'Basic ' + b.toString('base64')
-      }
-    };
-  }
+      security[basic.key] = {
+        param: {
+          in: 'header',
+          name: 'Authorization',
+          value: `{{${basic.name}}}`
+        },
+        variable: {
+          name: basic.name,
+          value: 'Basic ' + b.toString('base64')
+        }
+      };
+    });
 
-  const apiKey = securityDef.securities.find(security => security.type === 'apiKey');
-  if (apiKey) {
-    security[apiKey.name] = {
-      param: {
-        in: apiKey.in,
-        name: apiKey.name,
-        value: `{{${apiKey.name}}}`
-      }
-    };
-  }
+  securityDef.securities.filter(security => security.type === 'apiKey')
+    .forEach(apiKey => {
+      security[apiKey.key] = {
+        param: {
+          in: apiKey.in,
+          name: apiKey.name,
+          value: `{{${apiKey.name}}}`
+        }
+      };
+    });
 
   return security;
 }

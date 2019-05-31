@@ -22,17 +22,17 @@ module.exports.run = callback => {
   });
 
   app.use('/pet/findByStatus', (req, res, next) => {
-    if (req.query.status === 'aaaaaa') return res.status(400).json();
-    if (req.query.status === 'sold') return res.status(404).json();
+    if (req.query.status === 'aaaaaa') return res.status(400).json({ code: 400 });
+    if (req.query.status === 'sold') return res.status(404).json({ code: 404 });
 
     return res.status(200).json({ code: 200, data: [] });
   });
 
   app.use('/pet/:id', (req, res, next) => {
-    if (Number(req.params.id) === 0) return res.status(404).json();
-    if (isNaN(Number(req.params.id))) return res.status(400).json();
+    if (Number(req.params.id) === 0) return res.status(404).json({ code: 404 });
+    if (isNaN(Number(req.params.id))) return res.status(400).json({ code: 400 });
 
-    if (req.method === 'GET') return res.status(200).json({});
+    if (req.method === 'GET') return res.status(200).json({ code: 200 });
     if (req.method === 'PUT') return res.status(200).json({});
     if (req.method === 'DELETE') return res.status(204).json();
 

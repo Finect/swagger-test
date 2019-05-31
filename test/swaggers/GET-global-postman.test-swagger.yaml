@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  description: "This is a sample server Petstore server.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters."
+  description: "This is a sample server Petstore server."
   version: "1.0.0"
   title: "Swagger Petstore"
   termsOfService: "http://swagger.io/terms/"
@@ -16,67 +16,29 @@ tags:
   externalDocs:
     description: "Find out more"
     url: "http://swagger.io"
+- name: "store"
+  description: "Access to Petstore orders"
+- name: "user"
+  description: "Operations about user"
+  externalDocs:
+    description: "Find out more about our store"
+    url: "http://swagger.io"
 schemes:
 - "http"
-paths:
-  /pet:
-    post:
-      tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
+
+x-pm-test:
+  tests:
+  - raw: |
+      var body = JSON.parse(responseBody);
+      tests['Code in json response is ok'] = body.code === pm.response.code;
+    except:
       responses:
-        201:
-          description: New pet created
-          x-pm-test:
-          - params:
-            - in: body
-              application/json: {
-                "id": 0,
-                "category": {
-                  "id": 0,
-                  "name": "string"
-                },
-                "name": "doggie",
-                "photoUrls": [
-                  "string"
-                ],
-                "tags": [
-                  {
-                    "id": 0,
-                    "name": "string"
-                  }
-                ],
-                "status": "available"
-              }
-            plugins:
-              - name: valueCheck
-                params:
-                  item: 'code'
-                  value: 201
-              - name: isObject
-                params:
-                  item: 'data'
-        400:
-          description: Invalid input
-        401:
-          description: Unauthorized
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
+        - 201
+        - 401
+      methods:
+        - delete
+
+paths:
   /pet/findByStatus:
     get:
       tags:
@@ -113,10 +75,6 @@ paths:
               in: query
               value: '{{status}}'
             plugins:
-              - name: valueCheck
-                params:
-                  item: 'code'
-                  value: 200
               - name: isArray
                 params:
                   item: 'data'
@@ -136,6 +94,7 @@ paths:
               - name: status
                 in: query
                 value: 'sold'
+
 
       security:
       - petstore_auth:
@@ -183,124 +142,7 @@ paths:
           description: "Pet not found"
       security:
       - api_key: []
-    put:
-      tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        200:
-          description: Pet updated
-          x-pm-test:
-          - params:
-            - name: petId
-              in: path
-              value: 1
-            - in: body
-              application/json: {
-                "name": "doggie",
-                "tags": [
-                  {
-                    "id": 0,
-                    "name": "string"
-                  }
-                ],
-                "status": "available"
-              }
-        400:
-          description: Invalid input
-          x-pm-test:
-           - params:
-              - name: petId
-                in: path
-                value: 'aaaaaa'
-        401:
-          description: Unauthorized
-        404:
-          description: "Pet not found"
-          x-pm-test:
-          - params:
-            - name: petId
-              in: path
-              value: 0
-            - in: body
-              application/json: {
-                "name": "doggie",
-                "tags": [
-                  {
-                    "id": 0,
-                    "name": "string"
-                  }
-                ],
-                "status": "available"
-              }
 
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    delete:
-      tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      consumes:
-      - "application/json"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        204:
-          description: Pet deleted
-          x-pm-test:
-          - params:
-            - name: petId
-              in: path
-              value: 1
-        400:
-          description: "Invalid ID supplied"
-          x-pm-test:
-           - params:
-              - name: petId
-                in: path
-                value: 'aaaaaa'
-        401:
-          description: Unauthorized
-        404:
-          description: "Pet not found"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
 securityDefinitions:
   petstore_auth:
     type: "oauth2"

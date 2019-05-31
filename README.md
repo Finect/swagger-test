@@ -117,6 +117,30 @@ Additionally, you can inclide more tests using plugins.
           item: 'data'
 ```
 
+## Global test
+You can define global test in swagger for all paths and all responses, except to... :-)
+
+```
+x-pm-test:
+  tests:
+    - raw: |
+        var body = JSON.parse(responseBody);
+        tests['Internal code response is ok'] = body.code === pm.response.code;
+      except:
+        responses:
+          - 201
+          - 401
+        methods:
+          - delete
+```
+
+### Why `x-pm-test-ignore404`
+You decide. If do you have a GET that return an array object, what do you prefer, return empty array or 404 response.
+
+- empty array?: use `x-pm-test-ignore404` in GET definition
+- 404?: don't use `x-pm-test-ignore404`.
+
+
 ## Testing
 ```
 $ npm install -g driven-swagger-test
