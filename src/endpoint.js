@@ -143,7 +143,7 @@ function buildPostmanItem (endpoint, test, content, accept, status) {
     name: (test.description || `[${status}] on ${url}`).replace('[url]', url),
     request: {
       method: endpoint.method,
-      url: `{{base-url}}${url.substring(1)}`,
+      url: `{{base-url}}${url}`,
       // @ts-ignore
       header: [
         { key: 'accept', value: accept },

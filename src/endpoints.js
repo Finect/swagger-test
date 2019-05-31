@@ -126,7 +126,7 @@ class Endpoints {
         result.collection.variables.add(new Variable({
           key: 'base-url',
           id: 'base-url',
-          value: variable.value + this.swagger.basePath,
+          value: variable.value + (this.swagger.basePath || ''),
           type: 'string'
         }));
 
@@ -145,7 +145,7 @@ class Endpoints {
       result.collection.variables.add(new Variable({
         key: 'base-url',
         id: 'base-url',
-        value: this.swagger.schemes[0] + '://' + this.swagger.host + this.swagger.basePath,
+        value: this.swagger.schemes[0] + '://' + this.swagger.host + (this.swagger.basePath || ''),
         type: 'string'
       }));
     }

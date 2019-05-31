@@ -4,12 +4,15 @@
       "name": "pet",
       "item": [
         {
-          "id": "e0249ccc-743d-46a5-b9d7-4cc9478f3db5",
+          "id": "0e72c219-3ed4-48a6-9ab8-d51f5b31ecee",
           "name": "[201] on /pet",
           "request": {
             "url": {
+              "path": [
+                "pet"
+              ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": []
@@ -39,7 +42,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "67e682de-43d5-46f5-81fc-614b44b27ee6",
+                "id": "46e1f3d1-bcc5-4fa7-bf69-02700d7eb4bb",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -63,12 +66,15 @@
           ]
         },
         {
-          "id": "4c4ef832-40d3-4766-b603-846ff4c353eb",
+          "id": "931beeab-5ee5-4e8c-8e63-8761d282fc04",
           "name": "['400'] on /pet",
           "request": {
             "url": {
+              "path": [
+                "pet"
+              ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": []
@@ -97,7 +103,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "f5676067-cb24-422a-b2fc-f118e1bc9104",
+                "id": "34fc2729-1f1f-4656-9776-e60bf065070b",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -112,12 +118,15 @@
           ]
         },
         {
-          "id": "becf15a8-8d25-44ff-b6a7-88711d2c4b66",
+          "id": "b2e7a062-f3b6-429a-ae5c-2ca12adb335a",
           "name": "['401'] on /pet",
           "request": {
             "url": {
+              "path": [
+                "pet"
+              ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": []
@@ -142,7 +151,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "9d8b8b31-3040-43d6-8ddf-b6db0d7f6582",
+                "id": "c983b1e6-8710-4999-9b1f-62f46da92bd9",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -157,15 +166,16 @@
           ]
         },
         {
-          "id": "cfed3ebe-9ff8-4809-8563-4305eae47706",
+          "id": "006b32a1-b039-4614-b91a-2be38f0f9c4a",
           "name": "[200] on /pet/findByStatus",
           "request": {
             "url": {
               "path": [
+                "pet",
                 "findByStatus"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [
                 {
@@ -200,7 +210,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "04a97194-e51d-435e-bad2-4df72672a7c5",
+                "id": "238276a6-c525-43f4-a816-9a671a3821b5",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -223,15 +233,16 @@
           ]
         },
         {
-          "id": "4a34bd7e-cf69-41f2-85b0-34d187e1fa13",
+          "id": "1475434d-e71e-4e11-8b3d-a7306012be20",
           "name": "[400] on /pet/findByStatus",
           "request": {
             "url": {
               "path": [
+                "pet",
                 "findByStatus"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [
                 {
@@ -266,7 +277,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "f0206255-09fa-4307-ad4e-4dfcc7a7f804",
+                "id": "cbba10de-9b0a-4807-8aac-ed86beb7aa7b",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -281,15 +292,16 @@
           ]
         },
         {
-          "id": "6669b355-937d-4ed0-b1be-59c1330da74f",
+          "id": "0c91bfec-900a-4cae-8995-9d91ac8b7e68",
           "name": "['401'] on /pet/findByStatus",
           "request": {
             "url": {
               "path": [
+                "pet",
                 "findByStatus"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [
                 {
@@ -321,7 +333,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "364eb505-db29-4dbd-b776-2f6ddd5c9d6e",
+                "id": "d6921755-9071-4781-b6ac-0c32f69990bf",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -336,15 +348,16 @@
           ]
         },
         {
-          "id": "41caaaae-2238-41ab-a46d-60d7841ca9fb",
+          "id": "4ce14963-9e7c-4a67-8694-fa61dc665e33",
           "name": "[404] on /pet/findByStatus",
           "request": {
             "url": {
               "path": [
+                "pet",
                 "findByStatus"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [
                 {
@@ -379,7 +392,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "e1921b5b-9ec9-48da-86fa-646c0f5c688f",
+                "id": "87aef62b-63f6-4ae9-aac0-bf59da25aeb8",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -394,15 +407,16 @@
           ]
         },
         {
-          "id": "71096037-5ad7-4c17-a6ff-c2ec34cfc44d",
+          "id": "5aed3c56-e382-4eb4-b8c8-2574ec8781af",
           "name": "[200] on /pet/:petId",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -437,7 +451,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "17c64fb1-2051-4d79-97fe-56612e523c39",
+                "id": "3813832e-8034-4419-9fb5-48339c86f145",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -452,15 +466,16 @@
           ]
         },
         {
-          "id": "2f9b3a89-f699-474c-b15e-bbbbe8002dab",
+          "id": "3992d884-7324-4bce-8bbb-0b16a300ec00",
           "name": "[400] on /pet/:petId",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -495,7 +510,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "352bf71b-6ff9-4811-a0bd-5d43e2b70728",
+                "id": "c3efdeb3-7870-4547-ac65-f25a61d71915",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -510,15 +525,16 @@
           ]
         },
         {
-          "id": "e9ec2365-6563-4ede-8bc7-5120f6e2deac",
+          "id": "d3da8c52-0568-4917-8f3f-393ca70057c2",
           "name": "['401'] on /pet/{petId}",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -549,7 +565,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "2741aff6-bff6-4cbf-a4c1-663b36248fbd",
+                "id": "06c4658d-38e1-4e7f-ac64-506bf9f952d7",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -564,15 +580,16 @@
           ]
         },
         {
-          "id": "17b515f5-34dd-4939-8202-0504952bd3ca",
+          "id": "3c6736fd-bea5-49e5-b801-35559f101da0",
           "name": "['404'] on /pet/{petId}",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -607,7 +624,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "20752c93-f0b7-4109-9802-9b21d1cff160",
+                "id": "ca9cad8a-e587-4e01-a9f8-d021f12ee31d",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -622,15 +639,16 @@
           ]
         },
         {
-          "id": "cba992bb-2969-4866-a742-f64977d6b7cf",
+          "id": "d6621925-0799-4943-ba12-6c7fe521c39c",
           "name": "[200] on /pet/:petId",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -665,7 +683,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "750755ce-8f7a-4c44-9aa8-f575845fd06f",
+                "id": "948cba09-f082-49ad-80e6-15100b7ba397",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -680,15 +698,16 @@
           ]
         },
         {
-          "id": "9c379acc-e14d-4d27-ad12-4c2440ac3e24",
+          "id": "04dde1d7-c2d7-405e-9b0b-b327d8565636",
           "name": "[400] on /pet/:petId",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -723,7 +742,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "7f4f6059-3ba4-43d3-928c-2ccb362a750b",
+                "id": "e9d9e538-06bb-4cc2-bfb8-5d0865b6bfe4",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -738,15 +757,16 @@
           ]
         },
         {
-          "id": "e3e36fc0-69a8-466e-9e6f-33671fd2d9ef",
+          "id": "ba7682b9-e43c-4ebe-9d8f-6ee38a4ad229",
           "name": "['401'] on /pet/{petId}",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -776,7 +796,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "073a7e36-458f-4e52-9271-5493510b6dfb",
+                "id": "2f8d6948-9f9c-484e-9110-19f7b8e514f3",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -791,15 +811,16 @@
           ]
         },
         {
-          "id": "443478a2-4535-4471-b1c5-20134aec1bae",
+          "id": "414a537a-4589-43fd-a506-6f9f06637ad4",
           "name": "[404] on /pet/:petId",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -834,7 +855,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "d213d9e4-f950-4fbb-9b2a-c6235ec1ae54",
+                "id": "4dedf384-18fe-45c0-958d-3e7676ebb9ca",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -849,15 +870,16 @@
           ]
         },
         {
-          "id": "6460cd23-7dc3-4aa5-847f-e961c4b69a8e",
+          "id": "72f661ad-72d9-4af0-82d2-b148d304efaf",
           "name": "[204] on /pet/:petId",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -897,7 +919,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "ecb8f47a-edc0-44f4-aaa7-44e66f07758d",
+                "id": "315ed8ef-de40-4f43-b43b-815270e0e1ee",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Body is empty\", function() {",
@@ -913,15 +935,16 @@
           ]
         },
         {
-          "id": "91d0c21f-45e3-4f50-9aba-008b58d63fa3",
+          "id": "1901ddd7-cce2-4108-aaca-3512b71a7cc7",
           "name": "[400] on /pet/:petId",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -961,7 +984,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "ff7c9e09-6f9b-416c-a973-f32d06eaae2e",
+                "id": "22c27c9d-c8d5-4aca-943b-2276da8f4598",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -976,15 +999,16 @@
           ]
         },
         {
-          "id": "0861e9df-1988-40b3-95e2-4b281846a07b",
+          "id": "d21c8aef-fa14-47f3-b393-ba71247e14df",
           "name": "['401'] on /pet/{petId}",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -1020,7 +1044,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "03ea0f0c-1001-45a7-a1a2-8ae589f1d2c7",
+                "id": "65007cb3-1704-4982-b37d-99e6a801ada1",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -1035,15 +1059,16 @@
           ]
         },
         {
-          "id": "125b322e-1194-4609-9d16-2ec584ef66df",
+          "id": "bbaaff95-31fd-4126-84d7-a3a290701a5e",
           "name": "['404'] on /pet/{petId}",
           "request": {
             "url": {
               "path": [
+                "pet",
                 ":petId"
               ],
               "host": [
-                "{{base-url}}pet"
+                "{{base-url}}"
               ],
               "query": [],
               "variable": [
@@ -1083,7 +1108,7 @@
             {
               "listen": "test",
               "script": {
-                "id": "3364ba4b-d010-4dca-b638-698cfc913a94",
+                "id": "1553e33a-0143-40e4-a529-dbf8ab11a0e6",
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Content-Type is present\", function() {",
@@ -1117,12 +1142,12 @@
     {
       "id": "base-url",
       "type": "string",
-      "value": "http://localhost:3000/",
+      "value": "http://localhost:3000",
       "key": "base-url"
     }
   ],
   "info": {
-    "_postman_id": "8df406e0-e5d0-4e7d-8974-4ea9e31c5373",
+    "_postman_id": "591d7d2e-fd22-4e3b-b8de-11a69238573e",
     "name": "Swagger Petstore",
     "version": {
       "raw": "1.0.0",
