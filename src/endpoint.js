@@ -68,7 +68,7 @@ function buildPostmanItems (endpoint) {
         return acc;
       }, test.params);
 
-      //add all parameters in defenition if not exist in test
+      //add all parameters in definition if not exist in test
       test.params = (endpoint.def.parameters || []).filter(dp => dp.in !== 'body').reduce((acc, p) => {
         if (!acc.find(pl => p.name === pl.name && p.in === pl.in)) {
           acc.push({
@@ -143,7 +143,7 @@ function buildPostmanItem (endpoint, test, content, accept, status) {
     name: (test.description || `[${status}] on ${url}`).replace('[url]', url),
     request: {
       method: endpoint.method,
-      url: `{{base-url}}${url.substring(1)}`,
+      url: `{{base-url}}${url}`,
       // @ts-ignore
       header: [
         { key: 'accept', value: accept },

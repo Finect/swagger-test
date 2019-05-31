@@ -26,6 +26,10 @@ class Events {
       result = result.concat(plugins.definitionTests(test.plugins));
     }
 
+    if (test.raw) {
+      result = result.concat(test.raw);
+    }
+
     return {
       listen: 'test',
       script: {
