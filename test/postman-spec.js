@@ -15,6 +15,17 @@ describe('Swagger definition to Postman test', () => {
     try {
       const results = await swaggerTests(`${__dirname}/swaggers/petstore-swagger.yaml`, {
         run: `${__dirname}/data.json`,
+        save: false // don't save postman collection to disk
+      });
+
+      console.assert(!results.tests.definition.some(result => result.code >= 5000), 'Errors in test.');
+    } catch (error) { throw error; }
+  });
+
+  it('Global test run ok', async () => {
+    try {
+      const results = await swaggerTests(`${__dirname}/swaggers/GET-global-postman.test-swagger.yaml`, {
+        run: `${__dirname}/data.json`,
         save: true
       });
 
