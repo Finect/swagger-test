@@ -77,7 +77,7 @@ paths:
           - params:
             - name: status
               in: query
-              value: '{{status}}'
+              value: 'pending'
             plugins:
               - name: isArray
                 params:

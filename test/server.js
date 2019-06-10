@@ -24,6 +24,7 @@ module.exports.run = callback => {
   app.use('/pet/findByStatus', (req, res, next) => {
     if (req.query.status === 'aaaaaa') return res.status(400).json({ code: 400 });
     if (req.query.status === 'sold') return res.status(404).json({ code: 404 });
+    if (req.query.status === 'pending') return res.status(200).json({ code: 200, data: [] });
 
     return res.status(200).json([ {
       id: 1845563262948980266,
