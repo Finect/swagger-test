@@ -1,9 +1,6 @@
-# Definition-driven swagger REST API testing
+# Swagger for definition and REST API testing
 [![Build Status](https://travis-ci.org/Finect/swagger-test.svg?branch=develop)](https://travis-ci.org/Finect/swagger-test) [![Coverage Status](https://coveralls.io/repos/github/Finect/swagger-test/badge.svg?branch=develop)](https://coveralls.io/github/Finect/swagger-test?branch=develop)
 
-
-## Special thank you
-To [Marco Antonio Sanz](https://twitter.com/marantonio82) and [CloudAppi](https://www.cloudappi.net/en_US/page/homepage) for the whole idea.
 
 ## Why definition test?
 Becouse API-First definition, is better with test
@@ -13,75 +10,69 @@ Becouse API-First definition, is better with test
 - Do you have any param in PATH? Your response should be contain 404 (not found)!
 - Do you have POST/PUT/PATCH operation? Your response should be contain 400 (bad request)!
 
-These are just some of the many test included in this tool. [Read more on wiki](https://github.com/Finect/swagger-test/wiki/definition-tests)
+These are just some of the [many test](https://github.com/Finect/swagger-test/wiki/definition-tests) included in this tool.
 
-## Postman
-Create postman collection from swagger and test your endpoints.
-- [Postman collection SDK](https://www.npmjs.com/package/postman-collection)
-- [Newman - the cli companion for postman](https://www.npmjs.com/package/newman)
+## REST API testing directly in Swagger!
 
-## Testing directly in... Swagger!
-
-Vendor extensions for test (These can be specified for any response, except `default`.)
+Vendor extension `x-pm-test` for test (These can be specified for any response, except `default`.)
 
 ```
-200:
-  description: "successful operation"
-  schema:
-    type: "array"
-    items:
-      $ref: "#/definitions/Pet"
-  x-pm-test:
-  - params:
-    - name: status
-      in: query
-      value: '{{status}}'
-400:
-  description: "Invalid status value"
-  x-pm-test:
+responses:
+  200:
+    description: "successful operation"
+    schema:
+      type: "array"
+      items:
+        $ref: "#/definitions/Pet"
+    x-pm-test:
     - params:
       - name: status
         in: query
-        value: 'aaaaaa'
+        value: '{{status}}'
+  400:
+    description: "Invalid status value"
+    x-pm-test:
+      - params:
+        - name: status
+          in: query
+          value: 'aaaaaa'
 ```
 
+### `x-pm-test` object representation
 
-| object | description | required |
-| ----------- | ----------- | -------- |
-| x-pm-test | Tests array | false |
-| x-pm-test.description | Description by test (request) | false |
-| x-pm-test.params | Params array to use in each test | false |
-| x-pm-test.params.name | Param name. | true |
-| x-pm-test.params.in | The location of the parameter. Possible values are "query", "header", "path", "formData" or "body*". | true |
-| x-pm-test.params.value | The value of the parameter used in request. | true |
+- x-pm-test (array, optional) - Tests array.
+    - description (string, optional) - Description used in postman endpoint name.
+    - params (array, optional) - Define parameters values in test
+        - name (string, required) - Param name. Required to all parameters, except body.
+        - in (string, required) - The location of the parameter. Possible values are "query", "header", "path", "formData" or "body*".
+        - value (string, required) - Value to fetch in parameter
+    - plugins (array, optional)
+        - name (string, required) - Plugin name to use
+        - params (object) - Object to define parameters to plugin
+    - raw (string, optional) - Define your custom postman test.
 
-For cases where any explicit test are be specified, they are inferred directly from the Swagger operation's specification..
-
-[Read more on wiki](https://github.com/Finect/swagger-test/wiki/Integration-tests)
-
-## Global test
-You can define global test in swagger for all paths and all responses, except to... :-)
-
+**YAML example**
 ```
 x-pm-test:
-  tests:
-    - raw: |
-        var body = JSON.parse(responseBody);
-        tests['Internal code response is ok'] = body.code === pm.response.code;
-      except:
-        responses:
-          - 201
-          - 401
-        methods:
-          - delete
+- description: Get pets by status
+  params:
+  - name: status
+    in: query
+    value: '{{status}}'
+  plugins:
+    - name: valueCheck
+      params:
+        item: 'id'
+        value: 0
+    - name: isArray
+      params:
+        item: 'tags'
+    - name: isObject
+      params:
+        item: 'category'
 ```
 
-### Why `x-pm-test-ignore404`
-You decide. If do you have a GET that return an array object, what do you prefer, return empty array or 404 response.
-
-- empty array?: use `x-pm-test-ignore404` in GET definition
-- 404?: don't use `x-pm-test-ignore404`.
-
+[Integration test on wiki](https://github.com/Finect/swagger-test/wiki/Integration-tests)
 
 ## Testing
 ```
@@ -120,6 +111,10 @@ describe('Swagger definition to Postman test', () => {
   });
 });
 ```
+
+## Special thank you
+To [Marco Antonio Sanz](https://twitter.com/marantonio82) and [CloudAppi](https://www.cloudappi.net/en_US/page/homepage) for the whole idea.
+
 
 TODO:
 1. Refactoring
