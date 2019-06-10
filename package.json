@@ -37,7 +37,7 @@
     "vkbeautify": "^0.99.3"
   },
   "devDependencies": {
-    "coveralls": "^3.0.3",
+    "coveralls": "^3.0.4",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.17.2",
@@ -50,7 +50,7 @@
     "typescript": "^3.4.5"
   },
   "scripts": {
-    "test": "mocha --timeout 0 --exit test/*-spec.js",
-    "coverage": "nyc --reporter=text-lcov npm test | coveralls"
+    "test": "nyc --reporter=lcov mocha --timeout 0 --exit test/*-spec.js",
+    "coverage": "nyc --reporter=text-lcov mocha --timeout 0 --exit test/*-spec.js | coveralls"
   }
 }

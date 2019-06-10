@@ -11,9 +11,9 @@ describe('Swagger definition to Postman test', () => {
     });
   });
 
-  it('Pet Store run all', async () => {
+  it('Global test run ok', async () => {
     try {
-      const results = await swaggerTests(`${__dirname}/swaggers/petstore-swagger.yaml`, {
+      const results = await swaggerTests(`${__dirname}/swaggers/GET-global-postman.test-swagger.yaml`, {
         run: `${__dirname}/data.json`,
         save: false // don't save postman collection to disk
       });
@@ -22,9 +22,9 @@ describe('Swagger definition to Postman test', () => {
     } catch (error) { throw error; }
   });
 
-  it('Global test run ok', async () => {
+  it('Pet Store run all', async () => {
     try {
-      const results = await swaggerTests(`${__dirname}/swaggers/GET-global-postman.test-swagger.yaml`, {
+      const results = await swaggerTests(`${__dirname}/swaggers/petstore-swagger.yaml`, {
         run: `${__dirname}/data.json`,
         save: true
       });

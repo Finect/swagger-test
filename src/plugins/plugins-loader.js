@@ -1,3 +1,5 @@
+/// <reference types="../../"/>
+
 'use strict';
 
 const fs = require('fs');
@@ -144,13 +146,15 @@ class Plugins {
   /**
    * External definition test
    * @param {Array<*>} tests
+   * @param {*} endpoint
+   * @param {string|number} status
    * @returns {string}
    */
-  definitionTests (tests) {
+  definitionTests (tests, endpoint, status) {
     let result = '';
     tests.forEach(test => {
       this.plugins.forEach(plugin => {
-        if (plugin[test.name]) result = result.concat(plugin[test.name](test.params));
+        if (plugin[test.name]) result = result.concat(plugin[test.name](test.params, endpoint, status));
       });
     });
 

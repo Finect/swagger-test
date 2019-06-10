@@ -23,7 +23,7 @@ class Events {
     result = result.concat(plugins.status(status));
 
     if (test.plugins) {
-      result = result.concat(plugins.definitionTests(test.plugins));
+      result = result.concat(plugins.definitionTests(test.plugins, endpoint, status));
     }
 
     if (test.raw) {
