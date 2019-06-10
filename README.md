@@ -1,6 +1,58 @@
 # Swagger for definition and REST API testing
 [![Build Status](https://travis-ci.org/Finect/swagger-test.svg?branch=develop)](https://travis-ci.org/Finect/swagger-test) [![Coverage Status](https://coveralls.io/repos/github/Finect/swagger-test/badge.svg?branch=develop)](https://coveralls.io/github/Finect/swagger-test?branch=develop)
 
+## Testing as cli application
+```
+$ npm install -g driven-swagger-test
+$ driven-swagger-test
+
+Usage: driven-swagger-test <JSON or YAML Swagger file definition> [options]
+
+Create Postman collection with test from swagger
+
+Options:
+  -v, --version              output the version number
+  -g --global [var]          Add global variables (default: [])
+  -r, --run [dataFile]       Run postman collection using newman cli.
+  -s, --save                 Save postman collection to disk
+  -t, --tokenUrl [tokenUrl]  Override token url in swagger.
+  -h, --help                 output usage information
+```
+
+## Usage in node applications as integration test
+```
+$ npm install driven-swagger-test --save-dev
+
+const swaggerTests = require('driven-swagger-test/src/swagger');
+const server = require('./server');
+
+describe('Swagger definition to Postman test', () => {
+  before(done => {
+    // Run your REST API Server
+    server.run(() => {
+      console.log('Server is running');
+      done();
+    });
+  });
+
+  it.only('Pet Store run all', async () => {
+    try {
+      const results = await swaggerTests(`${__dirname}/swaggers/petstore-swagger.yaml`, {
+        run: `${__dirname}/data.json`,
+        save: true
+      });
+
+      console.assert(!results.tests.definition.some(result => result.code >= 5000), 'Errors in test.');
+    } catch (error) { throw error; }
+  });
+
+  after(done => {
+    server.stop(() => {
+      done();
+    });
+  });
+});
+```
 
 ## Why definition test?
 Becouse API-First definition, is better with test
@@ -74,43 +126,6 @@ x-pm-test:
 
 [Integration test on wiki](https://github.com/Finect/swagger-test/wiki/Integration-tests)
 
-## Testing
-```
-$ npm install -g driven-swagger-test
-$ driven-swagger-test
-```
-
-## Usage
-```
-const server = require('./server');
-const swaggerTests = require('../src/swagger');
-
-describe('Swagger definition to Postman test', () => {
-  before(done => {
-    server.run(() => {
-      console.log('JSON Server is running');
-      done();
-    });
-  });
-
-  it.only('Pet Store run all', async () => {
-    try {
-      const results = await swaggerTests(`${__dirname}/swaggers/petstore-swagger.yaml`, {
-        run: `${__dirname}/data.json`,
-        save: true
-      });
-
-      console.assert(!results.tests.definition.some(result => result.code >= 5000), 'Errors in test.');
-    } catch (error) { throw error; }
-  });
-
-  after(done => {
-    server.stop(() => {
-      done();
-    });
-  });
-});
-```
 
 ## Special thank you
 To [Marco Antonio Sanz](https://twitter.com/marantonio82) and [CloudAppi](https://www.cloudappi.net/en_US/page/homepage) for the whole idea.

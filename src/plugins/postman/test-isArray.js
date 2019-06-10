@@ -8,9 +8,11 @@ class TestIsArray {
    * @memberof TestIsArray
    */
   isArray (params) {
-    return `pm.test("${params.item} is array", function () {
+    const varName = params && params.item ? params.item : 'body';
+
+    return `pm.test("${varName} is array", function () {
       var jsonData = pm.response.json();
-      pm.expect(Array.isArray(jsonData.${params.item})).to.eql(true);
+      pm.expect(Array.isArray(${varName === 'body' ? 'jsonData' : `jsonData.${params.item}`})).to.eql(true);
     });`;
   };
 }

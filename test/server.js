@@ -25,7 +25,41 @@ module.exports.run = callback => {
     if (req.query.status === 'aaaaaa') return res.status(400).json({ code: 400 });
     if (req.query.status === 'sold') return res.status(404).json({ code: 404 });
 
-    return res.status(200).json({ code: 200, data: [] });
+    return res.status(200).json([ {
+      id: 1845563262948980266,
+      category: {
+        id: 0,
+        name: 'string'
+      },
+      name: 'doggie',
+      photoUrls: [
+        'string'
+      ],
+      tags: [{
+        id: 0,
+        name: 'string'
+      }],
+      status: 'sold'
+    }, {
+      id: -795,
+      category: {
+        id: -260,
+        name: 'M3QLVBf-cA_3Pe-L'
+      },
+      name: 'doggie',
+      photoUrls: [
+        'tN7_0pAdG7xt8MgF',
+        'KLd_rdWVb1QSowN_',
+      ],
+      tags: [{
+        id: 864,
+        name: 'luBi2v0vA56bQVhT'
+      }, {
+        id: -721,
+        name: 'Z7jqlpVGpOzOaw9g'
+      }],
+      status: 'sold'
+    }]);
   });
 
   app.use('/pet/:id', (req, res, next) => {

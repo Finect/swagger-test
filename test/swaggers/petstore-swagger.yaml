@@ -113,13 +113,8 @@ paths:
               in: query
               value: '{{status}}'
             plugins:
-              - name: valueCheck
-                params:
-                  item: 'code'
-                  value: 200
               - name: isArray
-                params:
-                  item: 'data'
+              - name: testSchema
         400:
           description: "Invalid status value"
           x-pm-test:
