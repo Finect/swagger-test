@@ -22,7 +22,7 @@ describe('Swagger definition to Postman test', () => {
     } catch (error) { throw error; }
   });
 
-  it.only('Global security run ok', async () => {
+  it('Global security run ok', async () => {
     try {
       const results = await swaggerTests(`${__dirname}/swaggers/GET-global-security.test-swagger.yaml`, {
         run: `${__dirname}/data.json`,
