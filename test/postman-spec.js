@@ -22,6 +22,17 @@ describe('Swagger definition to Postman test', () => {
     } catch (error) { throw error; }
   });
 
+  it.only('Global security run ok', async () => {
+    try {
+      const results = await swaggerTests(`${__dirname}/swaggers/GET-global-security.test-swagger.yaml`, {
+        run: `${__dirname}/data.json`,
+        save: false // don't save postman collection to disk
+      });
+
+      console.assert(!results.tests.definition.some(result => result.code >= 5000), 'Errors in test.');
+    } catch (error) { throw error; }
+  });
+
   it('Pet Store run all', async () => {
     try {
       const results = await swaggerTests(`${__dirname}/swaggers/petstore-swagger.yaml`, {

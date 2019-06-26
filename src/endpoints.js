@@ -56,7 +56,7 @@ class Endpoints {
     };
 
     let securities;
-    let security;
+    let globalSecurity;
     const securityDefinitions = { securities: [] };
     Object.keys(this.swagger.securityDefinitions).forEach(sec => {
       securityDefinitions.securities.push(Object.assign({ key: sec }, this.swagger.securityDefinitions[sec]));
@@ -78,15 +78,16 @@ class Endpoints {
       if (this.swagger.security) {
         // Get first security key
         const key = Object.keys(this.swagger.security[0])[0];
-        security = securities[key];
+        globalSecurity = securities[key];
 
-        if (security.variable) this.globalVariables.push(security.variable);
+        if (globalSecurity.variable) this.globalVariables.push(globalSecurity.variable);
       }
     }
 
     /** @type {Array<DefinitionErrorDetail>} */
     let results = [];
     this.endpoints.forEach(endpoint => {
+      let security;
       if (this.swagger.securityDefinitions && endpoint.def.security) {
         const key = Object.keys(endpoint.def.security[0])[0];
         security = securities[key];
@@ -97,7 +98,7 @@ class Endpoints {
         }
       }
 
-      let members = endpoint.export(this.swagger['x-pm-test'], security);
+      let members = endpoint.export(this.swagger['x-pm-test'], security || globalSecurity);
       let folder;
       if (endpoint.def.tags && endpoint.def.tags.length > 0) {
         folder = result.collection.items.find(member => member.name === endpoint.def.tags[0], null);
