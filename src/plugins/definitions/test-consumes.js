@@ -16,7 +16,7 @@ class TestConsumes extends Result {
   consume (definition, consume, method) {
     const result = [];
 
-    if (method !== 'get') return result;
+    if (method === 'get') return result;
     const error = this.writeResult('Should be contain consumes (accept) definition.', consume !== undefined ? 0 : 8001);
     if (error !== null) result.push(error);
 

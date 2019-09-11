@@ -16,7 +16,7 @@ class TestProduces extends Result {
   produce (definition, produce, method) {
     const result = [];
 
-    if (method === 'get') return result;
+    if (method !== 'get') return result;
     const error = this.writeResult('Should be contain produces (content-type) definition.',
       produce !== undefined ? 0 : 8001);
 
