@@ -70,6 +70,7 @@ module.exports = async (swagger, options = {}) => {
 
     process.stdout.write('\nOption --run detected. Using newman to run collection.\n');
     const newmanOptions = {
+      ignoreRedirects: true,
       collection: result.collection,
       reporters: 'cli'
     };
