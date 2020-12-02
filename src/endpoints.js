@@ -1,3 +1,4 @@
+// @ts-nocheck
 /// <reference path="../index.d.ts"/>
 
 'use strict';

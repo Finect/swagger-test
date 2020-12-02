@@ -13,7 +13,7 @@ class TestResponses extends TestResponse {
    */
   get (definition) {
     const result = [];
-    const error = this.__test(definition.responses, ['200', '202', '206'], 5001);
+    const error = this.__test(definition.responses, ['200', '202', '206', '301', '302'], 5001);
 
     if (error !== null) result.push(error);
     return result;
