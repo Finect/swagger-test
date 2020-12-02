@@ -34,7 +34,7 @@ paths:
       summary: "Finds Pets by status"
       description: "Multiple status values can be provided with comma separated strings"
       operationId: "findPetsByStatus"
-      consumes:
+      produces:
       - "application/json"
       parameters:
       - name: "status"
@@ -110,7 +110,7 @@ paths:
       summary: "Returns pet inventories by status"
       description: "Returns a map of status codes to quantities"
       operationId: "getInventory"
-      consumes:
+      produces:
       - "application/json"
       parameters: []
       responses:

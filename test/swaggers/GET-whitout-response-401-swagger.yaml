@@ -34,7 +34,7 @@ paths:
       summary: "Finds Pets by status"
       description: "Multiple status values can be provided with comma separated strings"
       operationId: "findPetsByStatus"
-      consumes:
+      produces:
       - "application/json"
       responses:
         200:
