@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use strict';
 
 const Item = require('postman-collection').Item;
@@ -30,7 +31,9 @@ class Endpoint {
       tests: (globalTests && globalTests['tests']) || []
     };
 
-    this.security = security;
+    this.security = security &&
+      this.def.security &&
+      this.def.security.length === 0 ? undefined : security;
 
     buildPostmanItems(this);
     return this.postmanItems;
@@ -106,7 +109,7 @@ function getGlobalsTest (endpoint, status) {
 
 function buildDefaultsTest (endpoint, status) {
   const tests = [{
-    description: `['${status}'] on ${endpoint.url}`,
+    description: `['${status}'] ${endpoint.def.responses[status].description}`,
   }];
 
   if (!endpoint.def.parameters) return tests;
@@ -136,7 +139,7 @@ function buildPostmanItem (endpoint, test, content, accept, status) {
 
   pathParameters.forEach(param => {
     urlVariables.push({ key: param.name, value: param.value.toString() });
-    url = url.replace(`{${param.name}}`, `:${param.name}`);
+    url = url.replace(`{${param.name}}`, param.variable ? `{{${param.name}}}` : `:${param.name}`);
   });
 
   const item = new Item({

@@ -89,7 +89,8 @@ class Endpoints {
     let results = [];
     this.endpoints.forEach(endpoint => {
       let security;
-      if (this.swagger.securityDefinitions && endpoint.def.security) {
+      const securityDefinitions = endpoint.def.security || this.swagger.securityDefinitions || [];
+      if (securityDefinitions && securityDefinitions.length > 0) {
         const key = Object.keys(endpoint.def.security[0])[0];
         security = securities[key];
 
@@ -103,18 +104,18 @@ class Endpoints {
       let folder;
       if (endpoint.def.tags && endpoint.def.tags.length > 0) {
         folder = result.collection.items.find(member => member.name === endpoint.def.tags[0], null);
-        // @ts-ignore
         if (folder) folder.item = folder.item.concat(members);
         else members = { name: endpoint.def.tags[0], item: members };
       }
 
-      // @ts-ignore
       if (!folder) result.collection.items.members = result.collection.items.members.concat(members);
       onExportEndpoint(endpoint.method + ': ' + endpoint.url);
 
       // Test definition results
-      results = results.concat(deinitionTests
-        .definitionTestsPassed(endpoint, this.swagger.security || endpoint.def.security));
+      results = results.concat(deinitionTests.definitionTestsPassed(
+        endpoint,
+        endpoint.def.buildPostmanItems || this.swagger.security
+      ));
     });
 
     if (results.length > 0 && results.some(result => result.code >= 5000)) {
