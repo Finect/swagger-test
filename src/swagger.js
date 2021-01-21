@@ -9,7 +9,6 @@ const colors = require('colors');
 
 const CollectionError = require('./errors').CollectionError;
 const Endpoints = require('./endpoints');
-const { Collection } = require('postman-collection');
 
 /**
  * @param {string} swagger Path to swagger file
