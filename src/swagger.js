@@ -9,17 +9,35 @@ const colors = require('colors');
 
 const CollectionError = require('./errors').CollectionError;
 const Endpoints = require('./endpoints');
+const { Collection } = require('postman-collection');
 
 /**
  * @param {string} swagger Path to swagger file
  * @param {object} [options] Options parameters
  * @param {boolean | string} [options.run] Run postman collection using, optionally, data file
  * @param {boolean} [options.save] Save postman collection
+ * @param {boolean} [options.production] If production is true, only GET test are executed
  * @param {Array<any>} [options.global] Globals options
  * @param {string} [options.tokenUrl] Url to resolve OAuth token (only support grant type: password)
  *
 */
 module.exports = async (swagger, options = {}) => {
+  /**
+   * Disable Tests in production env
+   *
+   * @param {Array<any>} members
+   */
+  function productionTests (members, items = []) {
+    members.forEach(member => {
+      if (member.item) {
+        return productionTests(member.item, items);
+      }
+      if (member.request.method === 'GET') items.push(member);
+    });
+
+    return items;
+  };
+
   const absSwaggerFile = path.resolve(swagger);
   const absDataFile = options.run && typeof options.run === 'string' ? path.resolve(options.run) : null;
   options.global = options.global || [];
@@ -69,6 +87,10 @@ module.exports = async (swagger, options = {}) => {
     if (!options.run) return result;
 
     process.stdout.write('\nOption --run detected. Using newman to run collection.\n');
+    if (options.production) {
+      // @ts-ignore
+      result.collection.items.members = productionTests(result.collection.items.members);
+    }
     const newmanOptions = {
       ignoreRedirects: true,
       collection: result.collection,
