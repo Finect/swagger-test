@@ -32,8 +32,8 @@ class Endpoints {
       const def = methods[method];
 
       const swaggerCommons = {
-        consumes: this.swagger.consumes,
-        produces: this.swagger.produces,
+        consumes: this.swagger.consumes || def.consumes,
+        produces: this.swagger.produces || def.produces,
         schemes: this.swagger.schemes
       };
 
@@ -59,11 +59,12 @@ class Endpoints {
     let securities;
     let globalSecurity;
     const securityDefinitions = { securities: [] };
-    Object.keys(this.swagger.securityDefinitions).forEach(sec => {
-      securityDefinitions.securities.push(Object.assign({ key: sec }, this.swagger.securityDefinitions[sec]));
-    });
 
     if (this.swagger.securityDefinitions) {
+      Object.keys(this.swagger.securityDefinitions).forEach(sec => {
+        securityDefinitions.securities.push(Object.assign({ key: sec }, this.swagger.securityDefinitions[sec]));
+      });
+
       const securityValues = this.globalVariables.filter(obj => {
         return obj.name === 'client_id' || obj.name === 'client_secret' ||
           obj.name === 'username' || obj.name === 'password';
