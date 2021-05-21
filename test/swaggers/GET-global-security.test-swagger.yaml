@@ -85,6 +85,8 @@ paths:
               - name: status
                 in: query
                 value: 'sold'
+        default:
+          description: Internal server error
 
       security:
       - petstore_auth:
@@ -127,6 +129,8 @@ paths:
           description: Unauthorized
         404:
           description: "Pet not found"
+        default:
+          description: Internal server error
 
 securityDefinitions:
   petstore_auth:

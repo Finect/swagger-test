@@ -61,6 +61,8 @@ paths:
           description: "Invalid status value"
         401:
           description: Unauthorized
+        default:
+          description: Internal server error
 
       security:
       - petstore_auth:

@@ -1,5 +1,7 @@
 'use strict';
 
+/// <reference path="../../../index.d.ts"/>
+
 const Result = require('./result');
 
 class TestResponse extends Result {

@@ -13,9 +13,12 @@ class TestResponses extends TestResponse {
    */
   get (definition) {
     const result = [];
-    const error = this.__test(definition.responses, ['200', '202', '206', '301', '302'], 5001);
-
+    let error = this.__test(definition.responses, ['default'], 5009);
     if (error !== null) result.push(error);
+
+    error = this.__test(definition.responses, ['200', '202', '206', '301', '302'], 5001);
+    if (error !== null) result.push(error);
+
     return result;
   };
 
@@ -27,7 +30,10 @@ class TestResponses extends TestResponse {
    */
   post (definition) {
     const result = [];
-    let error = this.__test(definition.responses, ['400'], 5002);
+    let error = this.__test(definition.responses, ['default'], 5009);
+    if (error !== null) result.push(error);
+
+    error = this.__test(definition.responses, ['400'], 5002);
     if (error !== null) result.push(error);
 
     error = this.__test(definition.responses, ['200', '201', '202', '204', '206'], 5003);
@@ -44,7 +50,13 @@ class TestResponses extends TestResponse {
    */
   put (definition) {
     const result = [];
-    let error = this.__test(definition.responses, ['400'], 5004);
+    let error = this.__test(definition.responses, ['default'], 5009);
+    if (error !== null) result.push(error);
+
+    error = this.__test(definition.responses, ['400'], 5004);
+    if (error !== null) result.push(error);
+
+    error = this.__test(definition.responses, ['400'], 5004);
     if (error !== null) result.push(error);
 
     error = this.__test(definition.responses, ['200', '202', '204', '206'], 5005);
@@ -61,7 +73,10 @@ class TestResponses extends TestResponse {
    */
   patch (definition) {
     const result = [];
-    let error = this.__test(definition.responses, ['400'], 5006);
+    let error = this.__test(definition.responses, ['default'], 5009);
+    if (error !== null) result.push(error);
+
+    error = this.__test(definition.responses, ['400'], 5006);
     if (error !== null) result.push(error);
 
     error = this.__test(definition.responses, ['200', '202', '204', '206'], 5007);
@@ -78,7 +93,10 @@ class TestResponses extends TestResponse {
    */
   delete (definition) {
     const result = [];
-    const error = this.__test(definition.responses, ['200', '202', '204'], 5008);
+    let error = this.__test(definition.responses, ['default'], 5009);
+    if (error !== null) result.push(error);
+
+    error = this.__test(definition.responses, ['200', '202', '204'], 5008);
     if (error !== null) result.push(error);
 
     return result;

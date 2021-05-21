@@ -7,11 +7,11 @@ class TestSetEnvironmentVariable {
    * @returns {string}
    * @memberof TestSetEnvironmentVariable
    */
-  setEnvironmentVariable (params) {
-    return `pm.test("Set ${params.var} to ${params.item}", function () {
-      var jsonData = pm.response.json();
-      pm.environment.set("${params.var}", jsonData.${params.item});
-    });`;
+   setEnvironmentVariable (params) {
+    return `
+    // Set ${params.var} from ${params.item}
+    var jsonData = pm.response.json();
+    pm.environment.set("${params.var}", jsonData.${params.item});`;
   };
 }
 

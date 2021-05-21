@@ -36,20 +36,6 @@ paths:
       operationId: "findPetsByStatus"
       produces:
       - "application/json"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -58,80 +44,11 @@ paths:
             items:
               $ref: "#/definitions/Pet"
         400:
-          description: "Invalid status value"
-        401:
-          description: Unauthorized
-        404:
-          description: Pet not found
-        default:
-          description: Internal server error
-
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        202:
-          description: "Operation accepted"
-        400:
-          description: "Invalid tag value"
-        401:
-          description: Unauthorized
-        404:
-          description: Pet not found
-        default:
-          description: Internal server error
-
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        206:
-          description: "successful partial content"
+          description: "successful operation"
           schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-        401:
-          description: Unauthorized
-        default:
-          description: Internal server error
-
-      security:
-      - api_key: []
+            type: "array"
+            items:
+              $ref: "#/definitions/Pet"
 
 securityDefinitions:
   petstore_auth:

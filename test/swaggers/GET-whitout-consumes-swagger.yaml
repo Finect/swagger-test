@@ -41,6 +41,8 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Pet"
+        default:
+          description: Internal server error
 
 securityDefinitions:
   petstore_auth:

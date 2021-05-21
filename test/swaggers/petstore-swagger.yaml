@@ -73,6 +73,9 @@ paths:
           description: Invalid input
         401:
           description: Unauthorized
+        default:
+          description: Internal server error
+
       security:
       - petstore_auth:
         - "write:pets"
@@ -131,6 +134,8 @@ paths:
               - name: status
                 in: query
                 value: 'sold'
+        default:
+          description: Internal server error
 
       security:
       - petstore_auth:
@@ -176,6 +181,9 @@ paths:
           description: Unauthorized
         404:
           description: "Pet not found"
+        default:
+          description: Internal server error
+
       security:
       - api_key: []
     put:
@@ -247,6 +255,8 @@ paths:
                 ],
                 "status": "available"
               }
+        default:
+          description: Internal server error
 
       security:
       - petstore_auth:
@@ -292,6 +302,9 @@ paths:
           description: Unauthorized
         404:
           description: "Pet not found"
+        default:
+          description: Internal server error
+
       security:
       - petstore_auth:
         - "write:pets"

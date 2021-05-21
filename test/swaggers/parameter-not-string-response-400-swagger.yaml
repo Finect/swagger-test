@@ -54,6 +54,8 @@ paths:
             $ref: "#/definitions/Order"
         404:
           description: "Order not found"
+        default:
+          description: Internal server error
 
 securityDefinitions:
   petstore_auth:

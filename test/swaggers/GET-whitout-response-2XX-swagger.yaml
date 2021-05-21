@@ -37,12 +37,10 @@ paths:
       produces:
       - "application/json"
       responses:
-        400:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
+        401:
+          description: Unauthorized
+        default:
+          description: Internal server error
 
 securityDefinitions:
   petstore_auth:

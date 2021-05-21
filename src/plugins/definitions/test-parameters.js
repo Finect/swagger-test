@@ -26,9 +26,9 @@ class TestParameters extends TestResponse {
       if (error !== null) result.push(error);
     }
 
-    if (parameters.some(param => ['path', 'query'].includes(param.in) && param.type !== 'string')) {
+    if (parameters.some(param => ['path', 'query'].includes(param.in))) {
       error = this.accept(definition.responses, ['400'],
-        'Parameter distinct of type string, in PATH or QUERY, should be contain bad request (400) response.', 7003);
+        'Parameter in PATH or QUERY, should be contain bad request (400) response.', 7003);
 
       if (error !== null) result.push(error);
     }

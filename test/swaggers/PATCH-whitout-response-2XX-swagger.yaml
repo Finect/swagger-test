@@ -58,6 +58,9 @@ paths:
           description: Unauthorized
         404:
           description: Pet not found
+        default:
+          description: Internal server error
+
       security:
       - petstore_auth:
         - "write:pets"
