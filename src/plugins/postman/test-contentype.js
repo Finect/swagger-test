@@ -1,20 +1,20 @@
 'use strict';
 
-class TestAccept {
+class TestContentType {
   /**
    * Check accepted response
-   * @param {string} accept
+   * @param {string} produce
    * @param {string|number} status
    * @returns {string}
    * @memberof TestAccept
    */
-  accept (accept, status) {
+  contentType (produce, status) {
     if (status.toString() === '204') return '';
 
     return `pm.test("Content-Type is present", function () {
-      pm.expect(pm.response.headers.has("Content-Type", "${accept}"));
+      pm.expect(pm.response.headers.has("Content-Type", "${produce}"));
     });`;
   };
 }
 
-module.exports = TestAccept;
+module.exports = TestContentType;

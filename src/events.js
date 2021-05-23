@@ -9,17 +9,17 @@ class Events {
    *
    * @static
    * @param {*} endpoint
-   * @param {string} accept
+   * @param {string} content
    * @param {string|number} status
    * @param {*} test
    * @returns
    * @memberof Events
    */
-  static getTests (endpoint, accept, status, test) {
+  static getTests (endpoint, content, status, test) {
     const plugins = new Plugins(`${__dirname}/plugins/postman`);
     plugins.load();
 
-    let result = plugins.accept(accept, status);
+    let result = plugins.contentType(content, status);
     result = result.concat(plugins.status(status));
 
     if (test.plugins) {

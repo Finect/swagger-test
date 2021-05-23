@@ -197,7 +197,7 @@ function buildPostmanItem (endpoint, test, content, accept, status) {
     else item.request.body.raw = bodyParam[content];
   }
 
-  item.events.add(Events.getTests(endpoint, accept, status, test));
+  item.events.add(Events.getTests(endpoint, content, status, test));
 
   return item;
 }

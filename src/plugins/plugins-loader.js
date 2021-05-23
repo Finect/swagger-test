@@ -116,14 +116,14 @@ class Plugins {
 
   /**
    * Check accepted response
-   * @param {string} accept
+   * @param {string} produce
    * @param {string|number} status
    * @returns {string}
    */
-  accept (accept, status) {
+  contentType (produce, status) {
     let result = '';
     this.plugins.forEach(plugin => {
-      if (plugin['accept']) result = result.concat(plugin['accept'](accept, status));
+      if (plugin['contentType']) result = result.concat(plugin['contentType'](produce, status));
     });
 
     return result;

@@ -1,6 +1,6 @@
 {
   "name": "driven-swagger-test",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Test swagger quality definition and create Postman collection with test",
   "preferGlobal": true,
   "bin": "driven-swagger-test.js",
