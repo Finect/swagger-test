@@ -3,7 +3,7 @@
 
 const Item = require('postman-collection').Item;
 const vkbeautify = require('vkbeautify');
-const jsf = require('json-schema-faker').default;
+const jsf = require('json-schema-faker');
 
 const Events = require('./events');
 
