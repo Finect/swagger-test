@@ -16,6 +16,7 @@ const Endpoints = require('./endpoints');
  * @param {boolean | string} [options.run] Run postman collection using, optionally, data file
  * @param {boolean} [options.save] Save postman collection
  * @param {boolean} [options.production] If production is true, only GET test are executed
+ * @param {boolean} [options.ignoreTest] If ignoreTest is true, endpoints marked as x-ignore-test aren`t executed
  * @param {Array<any>} [options.global] Globals options
  * @param {string} [options.tokenUrl] Url to resolve OAuth token (only support grant type: password)
  *
@@ -25,13 +26,19 @@ module.exports = async (swagger, options = {}) => {
    * Disable Tests in production env
    *
    * @param {Array<any>} members
+   * @param {Object} options
+   * @param {Array} items
    */
-  function productionTests (members, items = []) {
+  function ignoreTests (members, options, items = []) {
     members.forEach(member => {
       if (member.item) {
-        return productionTests(member.item, items);
+        return ignoreTests(member.item, options, items);
       }
-      if (member.request.method === 'GET') items.push(member);
+
+      const ignoreItem = (options.ignoreTest || false) && member.disabled;
+
+      if (options.production && ignoreItem === false && member.request.method === 'GET') items.push(member);
+      else if (!options.production && ignoreItem === false) items.push(member);
     });
 
     return items;
@@ -86,10 +93,10 @@ module.exports = async (swagger, options = {}) => {
     if (!options.run) return result;
 
     process.stdout.write('\nOption --run detected. Using newman to run collection.\n');
-    if (options.production) {
-      // @ts-ignore
-      result.collection.items.members = productionTests(result.collection.items.members);
-    }
+
+    // @ts-ignore
+    result.collection.items.members = ignoreTests(result.collection.items.members, options);
+
     const newmanOptions = {
       ignoreRedirects: true,
       collection: result.collection,

@@ -143,6 +143,7 @@ paths:
         - "read:pets"
   /pet/{petId}:
     get:
+      x-ignore-test: true
       tags:
       - "pet"
       summary: "Find pet by ID"

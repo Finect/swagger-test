@@ -198,6 +198,7 @@ function buildPostmanItem (endpoint, test, content, accept, status) {
   }
 
   item.events.add(Events.getTests(endpoint, content, status, test));
+  item.disabled = endpoint.def['x-ignore-test'] === true;
 
   return item;
 }
