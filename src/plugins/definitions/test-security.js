@@ -14,8 +14,8 @@ class TestSecurity extends TestResponse {
    */
   security (definition, security) {
     const result = [];
-    if (security === undefined &&
-      (definition.security === undefined || definition.security.length === 0)) return result;
+    if ((security === undefined && definition.security === undefined)
+      || (definition.security && definition.security.length === 0)) return result;
 
     const error = this.accept(definition.responses, ['401'],
       'Security definition, should be contain (401) response.', 6001);
